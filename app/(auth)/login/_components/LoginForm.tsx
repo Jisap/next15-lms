@@ -45,7 +45,7 @@ import { toast } from 'sonner'
           fetchOptions: {
             onSuccess: () => {
               toast.success('Email sent')
-              router.push(`/verify-request`)
+              router.push(`/verify-request?email=${email}`)
             },
             onError: (error) => {
               toast.error('Internal server error')
