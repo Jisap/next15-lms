@@ -14,7 +14,7 @@ import { toast } from "sonner"
 const VerifyRequest = () => {
 
   const router = useRouter();
-  const [otp, setOtp] = useState("");
+  const [otp, setOtp] = useState("");                         // Aqui se almacena el OTP recibido por email
   const [emailPending, startTransition] = useTransition();
   const params = useSearchParams();
   const email = params.get("email") as string;
@@ -22,16 +22,16 @@ const VerifyRequest = () => {
 
   const verifyOtp = () => {
     startTransition(async () => {
-      await authClient.signIn.emailOtp({
+      await authClient.signIn.emailOtp({                      // Se llama al API de better-auth para verificar el OTP
         email: email,
         otp: otp,
-        fetchOptions:{
+        fetchOptions: {                                       // better-auth busca en su base de datos el código OTP que generó para ese email. Compara si el código proporcionado es correcto y si no ha expirado.
           onSuccess: () => {
             toast.success('Email Verified')
-            router.push("/")
+            router.push("/")                                  // Si el código es correcto, redirecciona al usuario a la página de inicio
           },
           onError: (error) => {
-            toast.error("Error verifying email/OTP")
+            toast.error("Error verifying email/OTP")          // Si el código es incorrecto, muestra un error
           }
         }
       })

@@ -39,13 +39,13 @@ import { toast } from 'sonner'
 
     function signInWithEmail() {
       startEmailTransition(async() => {
-        await authClient.emailOtp.sendVerificationOtp({
+        await authClient.emailOtp.sendVerificationOtp({      // better-auth recibe una petición para obtener un OTP -> resend envia el correo con el OTP
           email: email,
           type: "sign-in",
           fetchOptions: {
             onSuccess: () => {
-              toast.success('Email sent')
-              router.push(`/verify-request?email=${email}`)
+              toast.success('Email sent')                     // Si el correo se envió
+              router.push(`/verify-request?email=${email}`)   // redirección a la página de verificación
             },
             onError: (error) => {
               toast.error('Internal server error')

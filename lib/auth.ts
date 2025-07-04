@@ -18,7 +18,7 @@ export const auth = betterAuth({
   plugins: [
     emailOTP({
       async sendVerificationOTP({email, otp}){
-        const { data, error } = await resend.emails.send({
+        const { data, error } = await resend.emails.send({   // Tranporter usado para enviar el OTP al usuario
           from: 'Jisap LMS <onboarding@resend.dev>',
           to: [email],
           subject: 'Jisap LMS - Verify your email',
