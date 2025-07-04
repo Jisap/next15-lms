@@ -3,11 +3,45 @@
 import { ThemeToggle } from "@/components/themeToggle";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
-import { on } from "events";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+interface FeatureProps {
+  title: string;
+  description: string;
+  icon: string;
+}
+
+const features: FeatureProps[] = [
+  {
+    title: "Comprehensive Courses",
+    description: 
+    "Access a wide range of carefully courses designed by indrustry experts.",
+    icon: "📚",
+  },
+  {
+    title: "Interactive Learning",
+    description: 
+    "Engage with interactive content, quizzes, and assessments to enhance your learning experience.",
+    icon: "🎮",
+  },
+  {
+    title: "Progress Tracking",
+    description: 
+    "Monitor your progress and achievements with detailed analytics and personalized dashboards.",
+    icon: "📊",
+  },
+  {
+    title: "Community Support",
+    description: 
+    "Connect with fellow learners, instructors, and industry experts for peer-to-peer support and collaboration.",
+    icon: "👥",
+  },
+  
+]
 
 
 export default function Home() {
@@ -49,6 +83,22 @@ export default function Home() {
             </Link>
           </div>
         </div>
+      </section>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {features.map((feature, index) => (
+          <Card key={index} className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <div className="text-4xl mb-4">{feature.icon}</div>
+              <CardTitle>{feature.title}</CardTitle>
+              <CardContent>
+                <p className="text-muted-foreground">
+                  {feature.description}
+                </p>
+              </CardContent>
+            </CardHeader>
+          </Card>
+        ))}
       </section>
     </>
   );
