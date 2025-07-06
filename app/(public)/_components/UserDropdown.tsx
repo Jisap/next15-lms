@@ -1,9 +1,12 @@
 
 import {
   BoltIcon,
+  BookOpen,
   BookOpenIcon,
   ChevronDownIcon,
+  Home,
   Layers2Icon,
+  LayoutDashboardIcon,
   LogOutIcon,
   PinIcon,
   UserPenIcon,
@@ -24,8 +27,29 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import Link from "next/link"
+import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export function UserDropdown() {
+
+  const router = useRouter()
+
+  const signOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/")
+          toast.success('Signed out')
+        },
+        onError: () => {
+          toast.error('Error signing out')
+        }
+      }
+    })
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -41,7 +65,11 @@ export function UserDropdown() {
           />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="max-w-64">
+
+      <DropdownMenuContent 
+        className="max-w-64"
+        align="end"
+      >
         <DropdownMenuLabel className="flex min-w-0 flex-col">
           <span className="text-foreground truncate text-sm font-medium">
             Keith Kennedy
@@ -52,32 +80,29 @@ export function UserDropdown() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <BoltIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 1</span>
+          <DropdownMenuItem asChild>
+            <Link href="/">
+              <Home size={16} className="opacity-60" aria-hidden="true" />
+              <span>Home</span>
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Layers2Icon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 2</span>
+          <DropdownMenuItem asChild>
+            <Link href="/courses">
+              <BookOpen size={16} className="opacity-60" aria-hidden="true" />
+              <span>Courses</span>
+            </Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <BookOpenIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 3</span>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <PinIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 4</span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <UserPenIcon size={16} className="opacity-60" aria-hidden="true" />
-            <span>Option 5</span>
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard">
+              <LayoutDashboardIcon size={16} className="opacity-60" aria-hidden="true" />
+              <span>Dashboard</span>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+        
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+
+        <DropdownMenuItem onClick={signOut}>
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>
