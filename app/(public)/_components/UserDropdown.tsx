@@ -26,6 +26,7 @@ import Link from "next/link"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useSignout } from "@/hooks/use-signout"
 
 interface iAppProps {
   name: string;
@@ -37,20 +38,8 @@ interface iAppProps {
 export function UserDropdown({ name, email, image }: iAppProps) {
 
   const router = useRouter()
-
-  const signOut = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/")
-          toast.success('Signed out')
-        },
-        onError: () => {
-          toast.error('Error signing out')
-        }
-      }
-    })
-  }
+  const handleSignOut = useSignout()
+  
 
   return (
     <DropdownMenu>
@@ -104,7 +93,7 @@ export function UserDropdown({ name, email, image }: iAppProps) {
         
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem onClick={signOut}>
+        <DropdownMenuItem onClick={handleSignOut}>
           <LogOutIcon size={16} className="opacity-60" aria-hidden="true" />
           <span>Logout</span>
         </DropdownMenuItem>
