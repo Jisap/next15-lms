@@ -31,7 +31,7 @@ export function NavMain({
             >
               <Link href="/admin/courses/create">
                 <IconCirclePlusFilled />
-                <span>Quick Create</span>¡
+                <span>Quick Create</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
