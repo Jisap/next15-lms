@@ -149,12 +149,7 @@ const CourseCreationPage = () => {
                   <FormItem className="w-full">
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <RichTextEditor />
-                      {/* <Textarea
-                        placeholder="Description"
-                        className="min-h-[120px]"
-                        {...field}
-                      /> */}
+                      <RichTextEditor field={field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
