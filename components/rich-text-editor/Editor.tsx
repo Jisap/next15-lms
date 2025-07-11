@@ -20,6 +20,9 @@ export const RichTextEditor = ({ field }: { field: any }) => {
         class: "min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl dark:prose-invert !w-full !max-w-none"
       },
     },
+
+    immediatelyRender: false, // Disable the rendering of the editor immediately after it is mounted
+
     onUpdate: ({ editor }) => {
       field.onChange(JSON.stringify(editor.getJSON())); // Update the value of the field with the current editor content in formated JSON string
     },
