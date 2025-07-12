@@ -20,6 +20,7 @@ import slugify from "slugify"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/rich-text-editor/Editor"
+import { Uploader } from "@/components/file-uploader/Uploader"
 
 
 
@@ -163,10 +164,11 @@ const CourseCreationPage = () => {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail image</FormLabel>
                     <FormControl>
-                      <Input 
+                      {/* <Input 
                         placeholder="Thumbnail image"
                         {...field}
-                      />
+                      /> */}
+                      <Uploader />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
