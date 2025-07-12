@@ -4,7 +4,7 @@ import { useCallback, useState } from "react"
 import { FileRejection, useDropzone } from "react-dropzone"
 import { Card, CardContent } from "../ui/card"
 import { cn } from "@/lib/utils"
-import { RenderEmptyState, RenderErrorState } from "./RenderState"
+import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 
@@ -23,7 +23,7 @@ interface UploaderStep {
 
 export const Uploader = () => {
 
-  const [fileState, setFileState] = useState<UploaderStep>({ // state
+  const [fileState, setFileState] = useState<UploaderStep>({                  // Estado para gestionar el ciclo de vida de la subida.
     error: false,
     file: null,
     id: null,
@@ -33,15 +33,16 @@ export const Uploader = () => {
     fileType: "image",
   })
 
-  const uploadFile = async(file:File) => { // setState
-    setFileState((prev) => ({
+  const uploadFile = async(file:File) => {                                    // Inicia el proceso de subida
+
+    setFileState((prev) => ({                                                 // Actualiza el estado para reflejar que la subida está en proceso.
       ...prev,
       uploading: true,
       progress: 0,
     }))
 
     try {
-      const presignedResponse = await fetch("/api/s3/upload",{
+      const presignedResponse = await fetch("/api/s3/upload",{                // petición post a la api para obtener presigned url
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -50,7 +51,7 @@ export const Uploader = () => {
           fileName: file.name,
           contentType: file.type,
           size: file.size,
-          asImage: true,
+          isImage: true,
         }),
       });
 
@@ -66,12 +67,12 @@ export const Uploader = () => {
         return;
       }
 
-      const { presignedUrl, key } = await presignedResponse.json();
+      const { presignedUrl, key } = await presignedResponse.json();           // la api responde con una clave úncica para el archivo y una url autorizada para una subida PUT
 
       await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.upload.onprogress = (event) => {
-          if(event.lengthComputable) {
+        const xhr = new XMLHttpRequest();                                     // Sube el archivo directamente a S3 usando la URL firmada
+        xhr.upload.onprogress = (event) => {                                  // Se usa XMLHttpRequest para poder escuchar los eventos de progreso
+          if (event.lengthComputable) {                                       // Actualiza la barra de progreso en la UI.
             const percentageCompleted = (event.loaded / event.total) * 100;
             setFileState((prev) => ({
               ...prev,
@@ -80,7 +81,7 @@ export const Uploader = () => {
           }
         }
 
-        xhr.onload = () => {
+        xhr.onload = () => {                                                    // cuando la subida es exitosa actualizar el estado y resolve de la promesa
           if(xhr.status === 200 || xhr.status === 204){
             setFileState((prev) => ({
               ...prev,
@@ -95,18 +96,19 @@ export const Uploader = () => {
           }else{
             reject(new Error("Upload failed..."))
           }
-
-          xhr.onerror = () => {
-            reject(new Error("Upload failed..."))
-          };
-
-          xhr.open("PUT", presignedUrl);
-          xhr.setRequestHeader("Content-Type", file.type);
-          xhr.send(file);
         }
+
+        xhr.onerror = () => {
+          reject(new Error("Upload failed..."))
+        };
+
+        xhr.open("PUT", presignedUrl);
+        xhr.setRequestHeader("Content-Type", file.type);
+        xhr.send(file);
       });
 
     } catch (error) {
+      console.log("Error", error);
       toast.error("Something went wrong");
       setFileState((prev) => ({
         ...prev,
@@ -117,11 +119,11 @@ export const Uploader = () => {
     }
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {  // 
+  const onDrop = useCallback((acceptedFiles: File[]) => {                    // Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
     
-    if (acceptedFiles.length > 0) {
+    if (acceptedFiles.length > 0) {                                          // Si hay un archivo seleccionado
       const file = acceptedFiles[0];
-      setFileState({
+      setFileState({                                                         // Actualiza el estado del File a subir
         file: file,
         uploading: true,
         progress: 0,
@@ -132,11 +134,11 @@ export const Uploader = () => {
         fileType: "image"
       })
 
-      uploadFile(file);
+      uploadFile(file);                                                     // Inica el proceso de subida
     }
   }, []);
 
-  const rejectedFiles = (fileRejection: FileRejection[]) => {
+  const rejectedFiles = (fileRejection: FileRejection[]) => {              // Maneja los archivos que son rechazados por react-dropzone
     if(fileRejection.length) {
       const tooManyFiles = fileRejection.find(
         (rejection) => rejection.errors[0].code === "too-many-files")
@@ -153,6 +155,27 @@ export const Uploader = () => {
         toast.error("Too many files selected, max is 1")
       }
     }
+  }
+
+  const renderContent = () => {                                             // Lógica de renderizado condicional basada en el estado de la subida.
+    if(fileState.uploading ){
+      return (
+        <RenderUploadingState 
+          progress={fileState.progress}
+          file={fileState.file as File}
+        />
+      )
+    }
+
+    if(fileState.error){
+      return <RenderErrorState />
+    }
+
+    if(fileState.objectUrl){
+      return <RenderUploadedState previewUrl={fileState.objectUrl} />
+    }
+
+    return <RenderEmptyState isDragActive={isDragActive} />
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
@@ -176,8 +199,7 @@ export const Uploader = () => {
     >
       <CardContent className="flex items-center justify-center w-full h-full p-4">
         <input {...getInputProps()} />
-        <RenderEmptyState  isDragActive={isDragActive} />
-        {/* <RenderErrorState /> */}
+        {renderContent()}
       </CardContent>
     </Card>
   )
