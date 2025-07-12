@@ -131,6 +131,8 @@ export const Uploader = () => {
         isDeleting: false,
         fileType: "image"
       })
+
+      uploadFile(file);
     }
   }, []);
 
