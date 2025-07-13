@@ -1,6 +1,5 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
-import { env } from "process";
 import z from "zod";
 import { v4 as uuidv4}  from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
@@ -17,9 +16,9 @@ export const fileUploadSchema = z.object({ // Esquema de validación para la pet
 export async function POST(request: Request) {                                  // Endpoint que maneja las peticiones POST para obtener la URL de subida.
   
   try {
-    const body = await request.json();
+    const body = await request.json();                                          // Se obtiene el cuerpo de la petición.
     
-    const validation = fileUploadSchema.safeParse(body);                        // 1. Valida que el cuerpo de la petición sea correcto.
+    const validation = fileUploadSchema.safeParse(body);                        // 1. Se valida que el cuerpo sea correcto.
     
     if (!validation.success) {
       return NextResponse.json(
@@ -28,7 +27,7 @@ export async function POST(request: Request) {                                  
       )
     }
 
-    const { fileName, contentType, size } = validation.data;
+    const { fileName, contentType, size } = validation.data;                    // Se extraen los datos de la petición.
 
     
     const uniqueKey = `${uuidv4()}-${fileName}}`                                // 2. Genera una clave única para el archivo para evitar sobreescrituras en S3.
@@ -45,13 +44,13 @@ export async function POST(request: Request) {                                  
       expiresIn: 360, // URL expire in 6 minutos
     });
 
-    const response = {
+    const response = {                                                          // Se devuelve la respuesta al cliente, url y clave única
       presignedUrl,
       key: uniqueKey
     }
 
     
-    return NextResponse.json(response);                                         // 5. Devuelve la URL y la clave al cliente.
+    return NextResponse.json(response);                                         // 5. Se parsea la respuesta
 
   } catch (error) {
     return NextResponse.json(

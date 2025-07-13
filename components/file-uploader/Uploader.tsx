@@ -33,7 +33,7 @@ export const Uploader = () => {
     fileType: "image",
   })
 
-  const uploadFile = async(file:File) => {                                    // Inicia el proceso de subida
+  const uploadFile = async(file:File) => {                                   // 2º Inicia el proceso de subida
 
     setFileState((prev) => ({                                                 // Actualiza el estado para reflejar que la subida está en proceso.
       ...prev,
@@ -119,7 +119,7 @@ export const Uploader = () => {
     }
   }
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {                    // Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
+  const onDrop = useCallback((acceptedFiles: File[]) => {                    // 1º Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
     
     if (acceptedFiles.length > 0) {                                          // Si hay un archivo seleccionado
       const file = acceptedFiles[0];
@@ -138,7 +138,7 @@ export const Uploader = () => {
     }
   }, []);
 
-  const rejectedFiles = (fileRejection: FileRejection[]) => {              // Maneja los archivos que son rechazados por react-dropzone
+  const rejectedFiles = (fileRejection: FileRejection[]) => {                // Maneja los archivos que son rechazados por react-dropzone
     if(fileRejection.length) {
       const tooManyFiles = fileRejection.find(
         (rejection) => rejection.errors[0].code === "too-many-files")
@@ -157,7 +157,7 @@ export const Uploader = () => {
     }
   }
 
-  const renderContent = () => {                                             // Lógica de renderizado condicional basada en el estado de la subida.
+  const renderContent = () => {                                              // 3º Lógica de renderizado condicional basada en el estado de la subida.
     if(fileState.uploading ){
       return (
         <RenderUploadingState 
@@ -178,9 +178,9 @@ export const Uploader = () => {
     return <RenderEmptyState isDragActive={isDragActive} />
   }
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ 
-     onDrop,
-     accept: {"image/*": []},
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({        // Utiliza react-dropzone para manejar el arrastrar y soltar de archivos
+     onDrop,                                                                 // Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
+     accept: {"image/*": []},       
      maxFiles: 1,
      multiple: false,
      maxSize: 5*1024*1024, // 5MB
