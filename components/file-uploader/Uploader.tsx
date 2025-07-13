@@ -196,7 +196,8 @@ export const Uploader = () => {
   },[fileState.objectUrl]);
 
   const handleRemoveFile = async() => {
-    if(fileState.isDeleting || !fileState.objectUrl){
+    if(fileState.isDeleting || !fileState.objectUrl) return 
+
       try {
         setFileState((prev) => ({
           ...prev,
@@ -250,7 +251,7 @@ export const Uploader = () => {
         }));
 
       } 
-    }
+    
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({        // Utiliza react-dropzone para manejar el arrastrar y soltar de archivos

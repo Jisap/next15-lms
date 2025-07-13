@@ -87,7 +87,6 @@ export const RenderUploadedState = ({
         ):(
           <XIcon className="size-4" />
         )}
-        <XIcon className="size-4" />
       </Button>
     </div>
   )
