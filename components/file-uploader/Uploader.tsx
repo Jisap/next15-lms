@@ -1,12 +1,13 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { FileRejection, useDropzone } from "react-dropzone"
 import { Card, CardContent } from "../ui/card"
 import { cn } from "@/lib/utils"
 import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
+
 
 interface UploaderStep {
   id: string | null;
@@ -121,6 +122,10 @@ export const Uploader = () => {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {                    // 1º Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
     
+    if(fileState.objectUrl && !fileState.objectUrl.startsWith("http")){      // Si el archivo ya está cargado en memoria, se descarga de la memoria.
+      URL.revokeObjectURL(fileState.objectUrl);                              // De esta manera se evita que la memoria se sature con multiples archivos cargados.
+    }
+
     if (acceptedFiles.length > 0) {                                          // Si hay un archivo seleccionado
       const file = acceptedFiles[0];
       setFileState({                                                         // Actualiza el estado del File a subir
@@ -134,9 +139,9 @@ export const Uploader = () => {
         fileType: "image"
       })
 
-      uploadFile(file);                                                     // Inica el proceso de subida
+      uploadFile(file);                                                      // Inica el proceso de subida
     }
-  }, []);
+  }, [fileState.objectUrl]);
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {                // Maneja los archivos que son rechazados por react-dropzone
     if(fileRejection.length) {
@@ -176,6 +181,72 @@ export const Uploader = () => {
     }
 
     return <RenderEmptyState isDragActive={isDragActive} />
+  }
+
+  useEffect(() => {
+    return () => {
+      if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {      // Si el archivo ya está cargado en memoria, se descarga de la memoria.
+        URL.revokeObjectURL(fileState.objectUrl);                                // De esta manera se evita que la memoria se sature con multiples archivos cargados.
+      }
+    }
+  },[fileState.objectUrl]);
+
+  const handleRemoveFile = async() => {
+    if(fileState.isDeleting || !fileState.objectUrl){
+      try {
+        setFileState((prev) => ({
+          ...prev,
+          isDeleting: true
+        }))
+
+        const response = await fetch("/api/s3/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            key: fileState.key
+          }),
+        });
+
+        if(!response.ok){
+          toast.error("Failed to delete file");
+          setFileState((prev) => ({
+            ...prev,
+            isDeleting: true,
+            error: true,
+          }))
+
+          return
+        }
+
+        if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {      // Si el archivo ya está cargado en memoria, se descarga de la memoria.
+          URL.revokeObjectURL(fileState.objectUrl);                                // De esta manera se evita que la memoria se sature con multiples archivos cargados.
+        }
+
+        setFileState((prev) => ({
+          file: null,
+          uploading:false,
+          progress: 0,
+          objectUrl: undefined,
+          error: false,
+          fileType: "image",
+          id: null,
+          isDeleting: false,
+        }));
+
+        toast.success("File deleted successfully");
+
+      } catch (error) {
+        toast.error("Error deleting file, please try again");
+        setFileState((prev) => ({
+          ...prev,
+          isDeleting: false,
+          error: true,
+        }));
+
+      } 
+    }
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({        // Utiliza react-dropzone para manejar el arrastrar y soltar de archivos
