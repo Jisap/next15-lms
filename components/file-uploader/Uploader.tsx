@@ -9,7 +9,7 @@ import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
 
 
-interface UploaderStep {
+interface UploaderState {
   id: string | null;
   file: File | null;
   uploading: boolean;
@@ -22,9 +22,14 @@ interface UploaderStep {
 }
 
 
-export const Uploader = () => {
+interface iAppProps {
+  value?: string;
+  onChange?: (value:string) => void
+}
 
-  const [fileState, setFileState] = useState<UploaderStep>({                  // Estado para gestionar el ciclo de vida de la subida.
+export const Uploader = ({value, onChange}: iAppProps) => {
+
+  const [fileState, setFileState] = useState<UploaderState>({                  // Estado para gestionar el ciclo de vida de la subida.
     error: false,
     file: null,
     id: null,
@@ -32,6 +37,7 @@ export const Uploader = () => {
     progress: 0,
     isDeleting: false,
     fileType: "image",
+    key: value // value del formulario = key del state del uploader
   })
 
   const uploadFile = async(file:File) => {                                   // 2º Inicia el proceso de subida
@@ -88,8 +94,11 @@ export const Uploader = () => {
               ...prev,
               uploading: false,
               progress: 100,
-              key: key,
+              key: key,    // Cuando se sube el archivo se genera un key único (images/cursos/image.png)
             }));
+
+            onChange?.(key) // El key del state del uploader actualiza el valor del formulario
+
             toast.success("File uploaded successfully");
 
             resolve()
@@ -228,6 +237,8 @@ export const Uploader = () => {
         if (fileState.objectUrl && !fileState.objectUrl.startsWith("http")) {      // Si el archivo ya está cargado en memoria, se descarga de la memoria.
           URL.revokeObjectURL(fileState.objectUrl);                                // De esta manera se evita que la memoria se sature con multiples archivos cargados.
         }
+
+        onChange?.("")
 
         setFileState((prev) => ({
           file: null,

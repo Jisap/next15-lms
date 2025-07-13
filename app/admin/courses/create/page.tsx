@@ -164,11 +164,10 @@ const CourseCreationPage = () => {
                   <FormItem className="w-full">
                     <FormLabel>Thumbnail image</FormLabel>
                     <FormControl>
-                      {/* <Input 
-                        placeholder="Thumbnail image"
-                        {...field}
-                      /> */}
-                      <Uploader />
+                      <Uploader 
+                        onChange={field.onChange}   // Cuando el value cambie esta función lo actualiza en form
+                        value={field.value}         // El valor del state del uploader es el que react-hook-form tiene reservado para el campo fileKey
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
