@@ -3,7 +3,7 @@
 import { Button, buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { courseCategories, courseLevels, courseSchema, CourseSchemaType, courseStatus } from "@/lib/zodSchemas"
-import { ArrowLeftIcon, PlusIcon, SparkleIcon } from "lucide-react"
+import { ArrowLeftIcon, Loader2, PlusIcon, SparkleIcon } from "lucide-react"
 import Link from "next/link"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -21,12 +21,20 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { RichTextEditor } from "@/components/rich-text-editor/Editor"
 import { Uploader } from "@/components/file-uploader/Uploader"
+import { useTransition } from "react"
+import { tryCatch } from "@/hooks/try-catch"
+import { CreateCouse } from "./actions"
+import { toast } from "sonner"
+import { useRouter } from "next/navigation"
 
 
 
 
 
 const CourseCreationPage = () => {
+
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
 
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
@@ -45,11 +53,22 @@ const CourseCreationPage = () => {
   });
 
   const onSubmit = (values: CourseSchemaType) => {
-    try {
+    startTransition(async () => {
+      const {data:result, error} = await tryCatch(CreateCouse(values));
       
-    } catch (error) {
-      
-    }
+      if(error){
+        toast.error("An unexpected error occurred");
+        return
+      }
+
+      if(result.status === "success"){
+        toast.success(result.message);
+        form.reset();
+        router.push("/admin/courses");
+      }else if(result.status === "error"){
+        toast.error(result.message)
+      }
+    })
   };
 
   return (
@@ -303,8 +322,17 @@ const CourseCreationPage = () => {
                 )}
               />
 
-              <Button>
-                Create Course <PlusIcon className="ml-1" size={16} />
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    Creating...
+                    <Loader2 className="animate-spin ml-1" />
+                  </>
+                ):(
+                  <>
+                    Create Course <PlusIcon className="ml-1" size={16} />
+                  </>
+                )}
               </Button>
             </form>
           </Form>
