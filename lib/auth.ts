@@ -4,6 +4,7 @@ import { prisma } from "./db";
 import { env } from "./env";
 import { emailOTP } from "better-auth/plugins"
 import { resend } from "./resend";
+import { admin } from "better-auth/plugins";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -25,6 +26,7 @@ export const auth = betterAuth({
           html: `<p>YourOTP is <strong>${otp}</strong></p>`,
         });
       }
-    })
+    }),
+    admin() // Da toda la lógica de backend para un panel de administración, permitiéndote a ti centrarte únicamente en construir la interfaz de usuario (UI) que consuma estos servicios.
   ]
 })

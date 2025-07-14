@@ -26,8 +26,7 @@ import { tryCatch } from "@/hooks/try-catch"
 import { CreateCouse } from "./actions"
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
-
-
+import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet"
 
 
 

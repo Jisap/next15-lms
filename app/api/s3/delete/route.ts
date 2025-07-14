@@ -1,3 +1,4 @@
+import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { auth } from "@/lib/auth";
 import { S3 } from "@/lib/S3Client";
@@ -22,11 +23,7 @@ const aj = arcjet
 
 export async function DELETE(request: Request) {
 
-  const session = await auth.api.getSession({                                    // Se obtiene la sesión del usuario.
-    headers: await headers()
-  });
-
-  
+  const session = await requireAdmin(); 
 
   try {
     const decision = await aj.protect(request, {
@@ -49,7 +46,7 @@ export async function DELETE(request: Request) {
 
     if(!key){
       return NextResponse.json(
-        { error: "Missing or invalid bject key"}, 
+        { error: "Missing or invalid object key"}, 
         { status: 400 }
       )
     }

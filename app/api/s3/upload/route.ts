@@ -8,6 +8,7 @@ import  { detectBot, fixedWindow } from "arcjet";
 import arcjet from "@/lib/arcjet";
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 
 export const fileUploadSchema = z.object({ // Esquema de validación para la petición.
@@ -33,10 +34,8 @@ const aj = arcjet
 
 export async function POST(request: Request) {                                  // Endpoint que maneja las peticiones POST para obtener la URL de subida.
   
-  const session = await auth.api.getSession({                                    // Se obtiene la sesión del usuario.
-    headers: await headers()
-  });
-
+  const session = await requireAdmin();                                         // Se verifica que el usuario tenga permiso (admin) para realizar la operación.
+  
   try {
 
     const decision = await aj.protect(request, {
@@ -67,7 +66,7 @@ export async function POST(request: Request) {                                  
     const { fileName, contentType, size } = validation.data;                    // Se extraen los datos de la petición.
 
     
-    const uniqueKey = `${uuidv4()}-${fileName}}`                                // 2. Genera una clave única para el archivo para evitar sobreescrituras en S3.
+    const uniqueKey = `${uuidv4()}-${fileName}`                                // 2. Genera una clave única para el archivo para evitar sobreescrituras en S3.
 
     
     const command = new PutObjectCommand({                                      // 3. Crea un comando 'PutObject' que describe la subida que se va a realizar.
