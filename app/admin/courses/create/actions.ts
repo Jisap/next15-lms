@@ -25,7 +25,7 @@ export async function CreateCouse(values: CourseSchemaType): Promise<ApiResponse
     const course = await prisma.course.create({
       data: {
         ...validation.data,
-        userId: session?.session.userId
+        userId: session?.user.id as string
       }
     });
 

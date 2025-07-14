@@ -4,6 +4,10 @@ import z from "zod";
 import { v4 as uuidv4}  from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { S3 } from "@/lib/S3Client";
+import  { detectBot, fixedWindow } from "arcjet";
+import arcjet from "@/lib/arcjet";
+import { headers } from "next/headers";
+import { auth } from "@/lib/auth";
 
 
 export const fileUploadSchema = z.object({ // Esquema de validación para la petición.
@@ -13,9 +17,42 @@ export const fileUploadSchema = z.object({ // Esquema de validación para la pet
   isImage: z.boolean(),
 });
 
+const aj = arcjet
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    }))
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5
+    })
+  )
+
 export async function POST(request: Request) {                                  // Endpoint que maneja las peticiones POST para obtener la URL de subida.
   
+  const session = await auth.api.getSession({                                    // Se obtiene la sesión del usuario.
+    headers: await headers()
+  });
+
   try {
+
+    const decision = await aj.protect(request, {
+      fingerprint: session?.user.id as string
+    });
+
+    if(decision.isDenied()){
+      return NextResponse.json(
+        {
+          error: "You are not allowed to perform this action"
+        }, 
+        {
+          status: 429
+        })
+    }
+
     const body = await request.json();                                          // Se obtiene el cuerpo de la petición.
     
     const validation = fileUploadSchema.safeParse(body);                        // 1. Se valida que el cuerpo sea correcto.
