@@ -29,7 +29,7 @@ interface iAppProps {
 
 export const Uploader = ({value, onChange}: iAppProps) => {
 
-  const [fileState, setFileState] = useState<UploaderState>({                  // Estado para gestionar el ciclo de vida de la subida.
+  const [fileState, setFileState] = useState<UploaderState>({                 // Estado para gestionar el ciclo de vida de la subida.
     error: false,
     file: null,
     id: null,
@@ -40,7 +40,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
     key: value // value del formulario = key del state del uploader
   })
 
-  const uploadFile = async(file:File) => {                                   // 2º Inicia el proceso de subida
+  const uploadFile = async(file:File) => {                                    // 2º Inicia el proceso de subida
 
     setFileState((prev) => ({                                                 // Actualiza el estado para reflejar que la subida está en proceso.
       ...prev,
@@ -74,7 +74,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
         return;
       }
 
-      const { presignedUrl, key } = await presignedResponse.json();           // la api responde con una clave úncica para el archivo y una url autorizada para una subida PUT
+      const { presignedUrl, key } = await presignedResponse.json();           // la api responde con una clave única para el archivo y una url autorizada para una subida PUT
 
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();                                     // Sube el archivo directamente a S3 usando la URL firmada
@@ -88,13 +88,13 @@ export const Uploader = ({value, onChange}: iAppProps) => {
           }
         }
 
-        xhr.onload = () => {                                                    // cuando la subida es exitosa actualizar el estado y resolve de la promesa
+        xhr.onload = () => {                                                  // cuando la subida es exitosa actualizar el estado y resolve de la promesa
           if(xhr.status === 200 || xhr.status === 204){
             setFileState((prev) => ({
               ...prev,
               uploading: false,
               progress: 100,
-              key: key,    // Cuando se sube el archivo se genera un key único (images/cursos/image.png)
+              key: key,    // Cuando se sube el archivo se genera un key único (aslkfjlsfkj-ñalskñslkf-image.png)
             }));
 
             onChange?.(key) // El key del state del uploader actualiza el valor del formulario
