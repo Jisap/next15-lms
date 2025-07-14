@@ -45,7 +45,11 @@ const CourseCreationPage = () => {
   });
 
   const onSubmit = (values: CourseSchemaType) => {
-    console.log(values);
+    try {
+      
+    } catch (error) {
+      
+    }
   };
 
   return (
