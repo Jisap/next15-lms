@@ -49,7 +49,7 @@ export async function CreateCouse(values: CourseSchemaType): Promise<ApiResponse
       }
     }
 
-    const validation = courseSchema.safeParse(values);
+    const validation = courseSchema.safeParse(values); // Validación de datos de formulario
     
     if(!validation.success){
       return {
@@ -58,7 +58,8 @@ export async function CreateCouse(values: CourseSchemaType): Promise<ApiResponse
       }
     }
 
-    const course = await prisma.course.create({
+    const course = await prisma.course.create({  // Creación de curso
+
       data: {
         ...validation.data,
         userId: session?.user.id 
