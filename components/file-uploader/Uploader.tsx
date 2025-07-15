@@ -30,7 +30,7 @@ interface iAppProps {
 
 export const Uploader = ({value, onChange}: iAppProps) => {
 
-  const fileUrl = useConstructUrl( value ?? "")
+  const fileUrl = useConstructUrl( value || "")
 
   const [fileState, setFileState] = useState<UploaderState>({                 // Estado para gestionar el ciclo de vida de la subida.
     error: false,
