@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: `${process.env.NEXT_PUBLIC_S3_BUCKET_NAME_IMAGES}.fly.storage.tigris.dev`,
         port: '',
-        pathname: '/**',
+        //pathname: '/**',
       },
     ],
   }

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils"
 import { RenderEmptyState, RenderErrorState, RenderUploadedState, RenderUploadingState } from "./RenderState"
 import { toast } from "sonner"
 import { v4 as uuidv4 } from "uuid"
+import { useConstructUrl } from "@/hooks/use-construct-url"
 
 
 interface UploaderState {
@@ -29,6 +30,8 @@ interface iAppProps {
 
 export const Uploader = ({value, onChange}: iAppProps) => {
 
+  const fileUrl = useConstructUrl( value ?? "")
+
   const [fileState, setFileState] = useState<UploaderState>({                 // Estado para gestionar el ciclo de vida de la subida.
     error: false,
     file: null,
@@ -37,7 +40,8 @@ export const Uploader = ({value, onChange}: iAppProps) => {
     progress: 0,
     isDeleting: false,
     fileType: "image",
-    key: value // value del formulario = key del state del uploader
+    key: value, // value del formulario = key del state del uploader
+    objectUrl: fileUrl
   })
 
   const uploadFile = async(file:File) => {                                    // 2º Inicia el proceso de subida

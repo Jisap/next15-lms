@@ -14,7 +14,7 @@ interface iAppProps {
 
 export const AdminCourseCard = ({data}: iAppProps) => {
 
-  const thumbnailUrl = useConstructUrl({ key: data.filekey })
+  const thumbnailUrl = useConstructUrl( data.filekey )
 
   return (
     <Card className="group relative py-0 gap-0">
