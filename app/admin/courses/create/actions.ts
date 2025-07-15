@@ -7,7 +7,7 @@ import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
-import { headers } from "next/headers";
+
 
 
 const aj = arcjet // Configuración de protección contra bots y ataques de fuerza bruta
