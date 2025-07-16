@@ -222,6 +222,15 @@ export const CourseStructure = ({ data }: iAppProps) => {
                               </SortableItem>
                             ))}
                           </SortableContext>
+
+                          <div className="p-2">
+                            <Button
+                              variant="outline"
+                              className="w-full"
+                            >
+                              Create new lesson
+                            </Button>
+                          </div>
                         </div>
                       </CollapsibleContent>
                     </Collapsible>
