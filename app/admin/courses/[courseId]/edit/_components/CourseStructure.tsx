@@ -8,8 +8,8 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course"
 import { cn } from "@/lib/utils"
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronDown, ChevronRight, GripVerticalIcon } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { ChevronDown, ChevronRight, GripVerticalIcon, Trash2, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 
@@ -66,17 +66,17 @@ export const CourseStructure = ({ data }: iAppProps) => {
     };
 
     return (
-      <div 
-        ref={setNodeRef} 
-        style={style} 
-        {...attributes} 
+      <div
+        ref={setNodeRef}
+        style={style}
+        {...attributes}
         className={cn(
-          "touch-none", 
+          "touch-none",
           className,
           isDragging ? "z-10" : ""
-        )}  
+        )}
       >
-        {children(listeners) }
+        {children(listeners)}
       </div>
     );
   }
@@ -118,8 +118,8 @@ export const CourseStructure = ({ data }: iAppProps) => {
   );
 
   return (
-    <DndContext 
-      collisionDetection={rectIntersection} 
+    <DndContext
+      collisionDetection={rectIntersection}
       onDragEnd={handleDragEnd}
       sensors={sensors}
     >
@@ -129,15 +129,15 @@ export const CourseStructure = ({ data }: iAppProps) => {
         </CardHeader>
 
         <CardContent>
-          <SortableContext 
+          <SortableContext
             items={items}
             strategy={verticalListSortingStrategy}
           >
-           {items.map((item) => (
-              <SortableItem 
-                key={item.id} 
+            {items.map((item) => (
+              <SortableItem
+                key={item.id}
                 id={item.id}
-                data={{type: "chapter"}}
+                data={{ type: "chapter" }}
               >
                 {(listeners) => (
                   <Card>
@@ -147,30 +147,73 @@ export const CourseStructure = ({ data }: iAppProps) => {
                     >
                       <div className="flex items-center justify-between p-3 border-b border-border">
                         <div className="flex items-center gap-2">
-                          <button className="cursor-grab opacity-60 hover:opacity-100" {...listeners}>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            {...listeners}>
                             <GripVerticalIcon className="size-4" />
-                          </button>
-                            
+                          </Button>
+
                           <CollapsibleTrigger asChild>
-                            <button
+                            <Button
+                              size="icon"
+                              variant="ghost"
                               className="flex items-center"
                             >
                               {item.isOpen ? (
                                 <ChevronDown className="size-4" />
-                              ):(
+                              ) : (
                                 <ChevronRight className="size-4" />
                               )}
-                            </button>
+                            </Button>
                           </CollapsibleTrigger>
 
-                          <p className="cursor-pointer hover:text-primary">{item.title}</p>
+                          <p className="cursor-pointer hover:text-primary pl-2">{item.title}</p>
                         </div>
+
+                        <Button
+                          size="icon"
+                          variant="outline"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
                       </div>
+
+                      <CollapsibleContent>
+                        <div className="p-1">
+                          <SortableContext
+                            items={item.lessons.map((lesson) => lesson.id)}
+                            strategy={verticalListSortingStrategy}
+                          >
+                            {item.lessons.map((lesson) => (
+                              <SortableItem
+                                key={lesson.id}
+                                id={lesson.id}
+                                data={{ type: "lesson", chapterId: item.id }}
+                              >
+                                {(lessonListeners) => (
+                                  <div className="flex items-center justify-between p-2 hover:bg-accent rounded-sm">
+                                    <div className="flex items-center gap-2">
+                                      <Button
+                                        variant="ghost"
+                                        size="icon"
+                                        {...lessonListeners}
+                                      >
+                                        <GripVerticalIcon className="size-4" />
+                                      </Button>
+                                    </div>
+                                  </div>
+                                )}
+                              </SortableItem>
+                            ))}
+                          </SortableContext>
+                        </div>
+                      </CollapsibleContent>
                     </Collapsible>
                   </Card>
                 )}
-             </SortableItem>
-           ))}
+              </SortableItem>
+            ))}
           </SortableContext>
         </CardContent>
       </Card>
