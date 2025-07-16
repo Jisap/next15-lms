@@ -18,9 +18,9 @@ export const CourseStructure = () => {
   function SortableItem(props) {
     const {
       attributes,
-      listeners,
+      listeners, // detectan el drag
       setNodeRef,
-      transform,
+      transform, // Calcula la nueva posición -> cuando se hace el drop DndContext dispara el evento onDragEnd en la función handleDragEnd
       transition,
     } = useSortable({ id: props.id });
 
@@ -36,7 +36,7 @@ export const CourseStructure = () => {
     );
   }
 
-  function handleDragEnd(event) {
+  function handleDragEnd(event) { //Calcula los índesc viejo y nuevo y utiliza arrayMove para crear un array reordenado
     const { active, over } = event;
 
     if (active.id !== over.id) {
@@ -49,7 +49,7 @@ export const CourseStructure = () => {
     }
   }
 
-  const sensors = useSensors(
+  const sensors = useSensors( // Detecta las acciones de entrada del usuario (click, toque de pantalla o teclado) que inician el drag
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,

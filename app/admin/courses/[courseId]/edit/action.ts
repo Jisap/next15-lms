@@ -1,10 +1,25 @@
 "use server"
 
 import { requireAdmin } from "@/app/data/admin/require-admin"
+import arcjet, { fixedWindow , detectBot } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { request } from "@arcjet/next";
 
+const aj = arcjet // Configuración de protección contra bots y ataques de fuerza bruta
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    }))
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5
+    })
+  )
 
 export const editCourse = async(
   data: CourseSchemaType,
@@ -15,6 +30,26 @@ export const editCourse = async(
   const user = await requireAdmin();
 
   try{
+
+    const req = await request();                  // Reconstruye el objeto de la petición (ip del cliente, headers, cookies) 
+    const decision = await aj.protect(req, {      // Se pasa a arcjet la petición que recibe la action para que pase por la protección contra bots y ataques de fuerza bruta.
+      fingerprint: user.user.id
+    });
+
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return {
+          status: "error",
+          message: "You have been blocked due to rate limiting"
+        }
+      } else {
+        return {
+          status: "error",
+          message: "Automated request blocked. If this is a mistake, please contact support"
+        }
+      }
+    }
+
     const result = courseSchema.safeParse(data); // Validación de datos de formulario
 
     if(!result.success){
