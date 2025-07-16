@@ -17,8 +17,8 @@ const EditRoute = async({params}: Props) => {
   const data = await adminGetCourse(courseId); // datos del curso
 
   return (
-    <div className="text-3xl font-bold mb-8">
-      <h1>Edit Course: <span>{data.title}</span></h1>
+    <div >
+      <h1 className="text-3xl font-bold mb-8">Edit Course: <span>{data.title}</span></h1>
 
       <Tabs defaultValue="basic-info" className="w-full">
         <TabsList className="grid grid-cols-2 w-full">

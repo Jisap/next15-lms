@@ -8,8 +8,9 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course"
 import { cn } from "@/lib/utils"
-import { Collapsible } from "@/components/ui/collapsible"
-import { GripVerticalIcon } from "lucide-react"
+import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { ChevronDown, ChevronRight, GripVerticalIcon } from "lucide-react"
+import { Button } from "@/components/ui/button"
 
 
 
@@ -142,13 +143,27 @@ export const CourseStructure = ({ data }: iAppProps) => {
                   <Card>
                     <Collapsible
                       open={item.isOpen}
-                      onOpenChange={() => toggleChapter(item.id)}
+                      onOpenChange={() => toggleChapter(item.id)} // Click en el CollapsibleTrigger cambia el state de isOpen
                     >
                       <div className="flex items-center justify-between p-3 border-b border-border">
                         <div className="flex items-center gap-2">
                           <button className="cursor-grab opacity-60 hover:opacity-100" {...listeners}>
                             <GripVerticalIcon className="size-4" />
                           </button>
+                            
+                          <CollapsibleTrigger asChild>
+                            <button
+                              className="flex items-center"
+                            >
+                              {item.isOpen ? (
+                                <ChevronDown className="size-4" />
+                              ):(
+                                <ChevronRight className="size-4" />
+                              )}
+                            </button>
+                          </CollapsibleTrigger>
+
+                          <p className="cursor-pointer hover:text-primary">{item.title}</p>
                         </div>
                       </div>
                     </Collapsible>
