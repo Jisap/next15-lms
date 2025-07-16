@@ -9,8 +9,9 @@ import { CSS } from '@dnd-kit/utilities';
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course"
 import { cn } from "@/lib/utils"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronDown, ChevronRight, GripVerticalIcon, Trash2, XIcon } from "lucide-react"
+import { ChevronDown, ChevronRight, FileText, GripVerticalIcon, Trash2, XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import Link from "next/link"
 
 
 
@@ -201,7 +202,21 @@ export const CourseStructure = ({ data }: iAppProps) => {
                                       >
                                         <GripVerticalIcon className="size-4" />
                                       </Button>
+
+                                      <FileText className="size-4"/>
+
+                                      {/* /admin/courses/[courseId]/[chapterId]/[lessonId] */}
+                                      <Link href={`/admin/courses/${data.id}/${item.id}/${lesson.id}`}> 
+                                        { lesson.title }
+                                      </Link>
                                     </div>
+
+                                    <Button
+                                      variant="outline"
+                                      size="icon"
+                                    >
+                                      <Trash2 className="size-4" />
+                                    </Button>
                                   </div>
                                 )}
                               </SortableItem>
