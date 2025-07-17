@@ -42,6 +42,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
+import { reorderLessons } from "../action"
 
 
 
@@ -211,6 +212,30 @@ export const CourseStructure = ({ data }: iAppProps) => {
       const previousItems = [...items]; 
       
       setItems(newItems);                                                                          // Actualiza el state de items
+    
+      // Se procede a aplicar los cambios en la base de datos
+      if(courseId){
+        const lessonsToUpdate = updatedlessonForState.map((lesson) => ({                           // Se recorre el array de lessons reordenado y establecemos para cada lección el nuevo order
+          id: lesson.id,
+          position: lesson.order,
+        }));
+
+        const reorderLessonPromise = () =>  reorderLessons(chapterId, lessonsToUpdate, courseId);  // Usamos la action actualizar el reordenamiento en bd
+
+        toast.promise(reorderLessonPromise, {
+          loading: "Reordering lessons...",
+          success: (result) => {
+            if(result.status === "success") return result.message;
+            throw new Error(result.message);
+          },
+          error: () => {
+            setItems(previousItems); // Se restaura el state de items a su valor original
+            return "Failed to reorder lessons. Please try again later.";
+          }
+        });
+      }
+
+      return;
     }
 
   }
@@ -244,7 +269,7 @@ export const CourseStructure = ({ data }: iAppProps) => {
           <CardTitle>Chapters</CardTitle>
         </CardHeader>
 
-        <CardContent>
+        <CardContent className="space-y-8">
           <SortableContext
             items={items}
             strategy={verticalListSortingStrategy}

@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
+import { revalidatePath } from "next/cache";
 
 const aj = arcjet // Configuración de protección contra bots y ataques de fuerza bruta
   .withRule(
@@ -77,6 +78,49 @@ export const editCourse = async(
     return {
       status: "error",
       message: "Failed to update the course. Please check server logs for details."
+    }
+  }
+}
+
+export const reorderLessons = async(
+  chapterId: string,
+  lessons: { id:string; position: number }[],
+  courseId: string
+): Promise<ApiResponse> => {
+  try{
+
+    if(!lessons || lessons.length === 0){
+      return {
+        status: "error",
+        message: "No lesson provided for reordering"
+      }
+    }
+
+    const updates = lessons.map((lesson) => 
+      prisma.lesson.update({
+        where: {
+          id:lesson.id,
+          chapterId: chapterId
+        },
+        data: {
+          position: lesson.position
+        }
+      })
+    )
+
+    await prisma.$transaction(updates); // Ejecuta las actualizaciones en una transacción
+
+    revalidatePath(`/admin/courses/${courseId}/edit`) // Actualiza el cache de la página para que los cambios se reflejen
+
+    return {
+      status: "success",
+      message: "Lessons reordered successfully"
+    }
+
+  }catch{
+    return {
+      status: "error",
+      message: "Failed to reorder lessons. Please check server logs for details."
     }
   }
 }
