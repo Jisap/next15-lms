@@ -1,17 +1,47 @@
 "use client"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { DndContext, DragEndEvent, DraggableSyntheticListeners, KeyboardSensor, PointerSensor, rectIntersection, useSensor, useSensors } from "@dnd-kit/core"
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { ReactNode, useState } from "react"
+import Link from "next/link"
+import { 
+  Card, 
+  CardContent, 
+  CardHeader, 
+  CardTitle 
+} from "@/components/ui/card"
+import { 
+  DndContext, 
+  DragEndEvent, 
+  DraggableSyntheticListeners, 
+  KeyboardSensor, 
+  PointerSensor, 
+  rectIntersection, 
+  useSensor, 
+  useSensors 
+} from "@dnd-kit/core"
+import { 
+  arrayMove, 
+  SortableContext, 
+  sortableKeyboardCoordinates, 
+  verticalListSortingStrategy 
+} from "@dnd-kit/sortable"
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course"
 import { cn } from "@/lib/utils"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
-import { ChevronDown, ChevronRight, FileText, GripVerticalIcon, Trash2, XIcon } from "lucide-react"
+import { 
+  Collapsible, 
+  CollapsibleContent, 
+  CollapsibleTrigger 
+} from "@/components/ui/collapsible"
+import { 
+  ChevronDown, 
+  ChevronRight, 
+  FileText, 
+  GripVerticalIcon, 
+  Trash2 
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
-import Link from "next/link"
+import { toast } from "sonner"
 
 
 
@@ -51,7 +81,7 @@ export const CourseStructure = ({ data }: iAppProps) => {
   )
 
 
-  function SortableItem({ children, id, className, data }: SortableItemProps) {
+  function SortableItem({ children, id, className, data }: SortableItemProps) { // Función que renderiza elementos arrastrables de una lista
     const {
       attributes,
       listeners, // detectan el drag
@@ -82,25 +112,58 @@ export const CourseStructure = ({ data }: iAppProps) => {
     );
   }
 
-  //Calcula los índesc viejo y nuevo y utiliza arrayMove para crear un array reordenado
+  //controlador de eventos que se dispara justo cuando sueltas un elemento después de haberlo arrastrado.
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;
+    const { active, over } = event;                                            // Cuando se empieza el drag el evento contiene 2 props: active que es el elemento que se arrastra y over que es el elemento sobre el que se está arrastrando
 
-    if (!over) return; // Add null check
+    if (!over || active.id === over.id) return;                                // Si no hay elemento sobre el que se está arrastrando o el elemento arrastrado es el mismo que el elemento sobre el que se está arrastrando, no hace nada porque no hay nada que reordenar
 
-    if (active.id !== over.id) {
-      setItems((items) => {
-        const oldIndex = items.findIndex(
-          (item) => item.id === active.id
-        );
-        const newIndex = items.findIndex((item) => item.id === over.id);
+    const activeId = active.id;                                                // Id del elemento arrastrado
+    const overId = over.id;                                                    // Id del elemento sobre el que se está arrastrando
+    const activeType = active.data.current?.type as "chapter" | "lesson";      // Tipo del elemento arrastrado
+    const overType = over.data.current?.type as "chapter" | "lesson";          // Tipo del elemento sobre el que se está arrastrando. Todo esto nos permite saber si estamos moviendo un capítulo o una lección
+    const courseId = data.id;
 
-        return arrayMove(items, oldIndex, newIndex);
-      });
+    // Lógica para mover capítulos. El objetivo es saber en qué posición 
+    // del array de capítulos debe insertarse el capítulo arrastrado.
+    if(activeType === "chapter"){                                              // Si movimos un capítulo
+      let targetChapterId = null;
+      
+      if(overType === "chapter"){                                              // y los soltamos sobre otro capítulo
+        targetChapterId = overId;                                              // entonces el destino ese mismo capítulo     
+      }else if(overType === "lesson"){                                         // pero si lo soltamos sobre una lección
+        targetChapterId = over.data.current?.chapterId ?? null                 // entonces el destino es el capítulo que contiene la lección
+      }
+
+      if(!targetChapterId){// Validación
+        toast.error("Could not determine the chapter for reordering");
+        return;
+      }
+
+      //Calculamos índices
+      const oldIndex = items.findIndex((item) => item.id === activeId);             // Índice del capítulo arrastrado en el array de items original
+      const newIndex = items.findIndex((item) => item.id === targetChapterId);      // Índice del capítulo destino
+
+      if(oldIndex === -1 || newIndex === -1){ // Validación
+        toast.error("Could not find chapter old/new index for reordering");
+        return;
+      }
+
+      // Reordenar el array de capçitulos
+      const reordedLocalChapter = arrayMove(items, oldIndex, newIndex);              // arrayMove crea un nuevo array con el elemento oldIndex movido a newIndex
+      const updatedChapterForState = reordedLocalChapter.map((chapter, index) => ({  // Se recorre el nuevo array reordenado y asigna el order correcto a cada capítulo según su nueva posición (índice + 1). 
+        ...chapter,
+        order: index + 1, // para que no aparezca index 0
+      }))
+
+      const previousItems = [...items]; // Para usar en futura mutation
+
+      setItems(updatedChapterForState);                                              // Actualiza el state de items
+     
     }
   }
 
-  function toggleChapter(chapterId: string) {
+  function toggleChapter(chapterId: string) { // Cambia el state de isOpen de un chapter
     setItems(
       items.map((chapter) =>
         chapter.id === chapterId
@@ -134,13 +197,13 @@ export const CourseStructure = ({ data }: iAppProps) => {
             items={items}
             strategy={verticalListSortingStrategy}
           >
-            {items.map((item) => (
+            {items.map((item) => ( // Renderiza cada chapter
               <SortableItem
                 key={item.id}
                 id={item.id}
                 data={{ type: "chapter" }}
               >
-                {(listeners) => (
+                {(listeners) => ( // Cada chapter tiene un Collapsible que mostrará las lecciones que contiene
                   <Card>
                     <Collapsible
                       open={item.isOpen}
@@ -183,7 +246,7 @@ export const CourseStructure = ({ data }: iAppProps) => {
                       <CollapsibleContent>
                         <div className="p-1">
                           <SortableContext
-                            items={item.lessons.map((lesson) => lesson.id)}
+                            items={item.lessons.map((lesson) => lesson.id)} // Renderiza cada lección dentro del Collapsible
                             strategy={verticalListSortingStrategy}
                           >
                             {item.lessons.map((lesson) => (
