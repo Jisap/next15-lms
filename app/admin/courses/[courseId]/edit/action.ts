@@ -199,13 +199,21 @@ export const createChapter = async(value: ChapterSchemaType): Promise<ApiRespons
       })
 
       await tx.chapter.create({
-        title : result.data.name,
-        courseId: result.data.courseId,
-        position: (maxPos?.position ?? 1) + 1
+        data:{
+          title : result.data.name,
+          courseId: result.data.courseId,
+          position: (maxPos?.position ?? 1) + 1
+        }
       })
     })
 
-
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`) // Actualiza el cache de la página para que los cambios se reflejen
+  
+    return {
+      status: "success",
+      message: "Chapter created successfully"
+    }
+    
   }catch{
     return {
       status: "error",
