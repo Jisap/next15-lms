@@ -42,7 +42,7 @@ import {
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
-import { reorderLessons } from "../action"
+import { reorderChapters, reorderLessons } from "../action"
 
 
 
@@ -115,25 +115,25 @@ export const CourseStructure = ({ data }: iAppProps) => {
 
   //controlador de eventos que se dispara justo cuando sueltas un elemento después de haberlo arrastrado.
   function handleDragEnd(event: DragEndEvent) {
-    const { active, over } = event;                                            // Cuando se empieza el drag el evento contiene 2 props: active que es el elemento que se arrastra y over que es el elemento sobre el que se está arrastrando
+    const { active, over } = event;                                                     // Cuando se empieza el drag el evento contiene 2 props: active que es el elemento que se arrastra y over que es el elemento sobre el que se está arrastrando
 
-    if (!over || active.id === over.id) return;                                // Si no hay elemento sobre el que se está arrastrando o el elemento arrastrado es el mismo que el elemento sobre el que se está arrastrando, no hace nada porque no hay nada que reordenar
+    if (!over || active.id === over.id) return;                                         // Si no hay elemento sobre el que se está arrastrando o el elemento arrastrado es el mismo que el elemento sobre el que se está arrastrando, no hace nada porque no hay nada que reordenar
 
-    const activeId = active.id;                                                // Id del elemento arrastrado
-    const overId = over.id;                                                    // Id del elemento sobre el que se está arrastrando
-    const activeType = active.data.current?.type as "chapter" | "lesson";      // Tipo del elemento arrastrado
-    const overType = over.data.current?.type as "chapter" | "lesson";          // Tipo del elemento sobre el que se está arrastrando. Todo esto nos permite saber si estamos moviendo un capítulo o una lección
+    const activeId = active.id;                                                         // Id del elemento arrastrado
+    const overId = over.id;                                                             // Id del elemento sobre el que se está arrastrando
+    const activeType = active.data.current?.type as "chapter" | "lesson";               // Tipo del elemento arrastrado
+    const overType = over.data.current?.type as "chapter" | "lesson";                   // Tipo del elemento sobre el que se está arrastrando. Todo esto nos permite saber si estamos moviendo un capítulo o una lección
     const courseId = data.id;
 
     // Lógica para mover capítulos. El objetivo es saber en qué posición 
     // del array de capítulos debe insertarse el capítulo arrastrado.
-    if(activeType === "chapter"){                                              // Si movimos un capítulo
+    if(activeType === "chapter"){                                                        // Si movimos un capítulo
       let targetChapterId = null;
       
-      if(overType === "chapter"){                                              // y los soltamos sobre otro capítulo
-        targetChapterId = overId;                                              // entonces el destino ese mismo capítulo     
-      }else if(overType === "lesson"){                                         // pero si lo soltamos sobre una lección
-        targetChapterId = over.data.current?.chapterId ?? null                 // entonces el destino es el capítulo que contiene la lección
+      if(overType === "chapter"){                                                        // y los soltamos sobre otro capítulo
+        targetChapterId = overId;                                                        // entonces el destino ese mismo capítulo     
+      }else if(overType === "lesson"){                                                   // pero si lo soltamos sobre una lección
+        targetChapterId = over.data.current?.chapterId ?? null                           // entonces el destino es el capítulo que contiene la lección
       }
 
       if(!targetChapterId){// Validación
@@ -142,25 +142,46 @@ export const CourseStructure = ({ data }: iAppProps) => {
       }
 
       //Calculamos índices
-      const oldIndex = items.findIndex((item) => item.id === activeId);             // Índice del capítulo arrastrado en el array de items original
-      const newIndex = items.findIndex((item) => item.id === targetChapterId);      // Índice del capítulo destino
+      const oldIndex = items.findIndex((item) => item.id === activeId);                   // Índice del capítulo arrastrado en el array de items original
+      const newIndex = items.findIndex((item) => item.id === targetChapterId);            // Índice del capítulo destino
 
       if(oldIndex === -1 || newIndex === -1){ // Validación
         toast.error("Could not find chapter old/new index for reordering");
         return;
       }
 
-      // Reordenar el array de capçitulos
-      const reordedLocalChapter = arrayMove(items, oldIndex, newIndex);              // arrayMove crea un nuevo array con el elemento oldIndex movido a newIndex
-      const updatedChapterForState = reordedLocalChapter.map((chapter, index) => ({  // Se recorre el nuevo array reordenado y asigna el order correcto a cada capítulo según su nueva posición (índice + 1). 
+      // Reordenar el array de capítulos
+      const reordedLocalChapter = arrayMove(items, oldIndex, newIndex);                    // arrayMove crea un nuevo array con el elemento oldIndex movido a newIndex
+      const updatedChapterForState = reordedLocalChapter.map((chapter, index) => ({        // Se recorre el nuevo array reordenado y asigna el order correcto a cada capítulo según su nueva posición (índice + 1). 
         ...chapter,
         order: index + 1, // para que no aparezca index 0
       }))
 
       const previousItems = [...items]; // Para usar en futura mutation
 
-      setItems(updatedChapterForState);                                              // Actualiza el state de items
+      setItems(updatedChapterForState);                                                    // Actualiza el state de items
      
+      // Se procede a aplicar los cambios en la base de datos
+      if (courseId) {
+        const chaptersToUpdate = updatedChapterForState.map((chapter) => ({                // Se recorre el array de lessons reordenado y establecemos para cada lección el nuevo order
+          id: chapter.id,
+          position: chapter.order,
+        }));
+
+        const reorderChapterPromise = () => reorderChapters( courseId, chaptersToUpdate );  // Usamos la action actualizar el reordenamiento en bd
+
+        toast.promise(reorderChapterPromise, {
+          loading: "Reordering chapters...",
+          success: (result) => {
+            if (result.status === "success") return result.message;
+            throw new Error(result.message);
+          },
+          error: () => {
+            setItems(previousItems); // Se restaura el state de items a su valor original
+            return "Failed to reorder chapters. Please try again later.";
+          }
+        });
+      }
     }
 
     // Lógica para mover lecciones.
