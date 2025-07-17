@@ -43,6 +43,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { reorderChapters, reorderLessons } from "../action"
+import { NewChapterModal } from "./NewChapterModal"
 
 
 
@@ -308,6 +309,7 @@ export const CourseStructure = ({ data }: iAppProps) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between border-b border-border">
           <CardTitle>Chapters</CardTitle>
+          <NewChapterModal courseId={data.id} />
         </CardHeader>
 
         <CardContent className="space-y-8">
