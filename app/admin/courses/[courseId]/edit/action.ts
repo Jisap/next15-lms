@@ -186,7 +186,7 @@ export const createChapter = async(value: ChapterSchemaType): Promise<ApiRespons
     }
 
     await prisma.$transaction(async(tx) => {
-      const maxPos = await tx.chapter.findFirst({
+      const maxPos = await tx.chapter.findFirst({ // Busca el capítulo con la posición más alta para el curso actual. Esto se hace para saber en que posición debe insertarse el nuevo capítulo (simempre al final)
         where: {
           courseId: result.data.courseId,
         },
@@ -198,7 +198,7 @@ export const createChapter = async(value: ChapterSchemaType): Promise<ApiRespons
         }
       })
 
-      await tx.chapter.create({
+      await tx.chapter.create({ // Crea el nuevo registro en la tabla de capítulos
         data:{
           title : result.data.name,
           courseId: result.data.courseId,
