@@ -1,6 +1,6 @@
 "use client"
 
-import { ReactNode, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import Link from "next/link"
 import { 
   Card, 
@@ -79,7 +79,27 @@ export const CourseStructure = ({ data }: iAppProps) => {
 
   const [items, setItems] = useState(
     initialItems
-  )
+  );
+
+  // permite actualizar el estado de item y del resto de props que cambiaron con la reordenación de posiciones
+  // La reordenación llama a action y esta implica un revalidatePath que provoca que se recargue la data de la página
+  useEffect(() => {
+    setItems((prevItems) => {
+      const updatedItems = data.chapter.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        order: chapter.position,
+        isOpen: prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
+        lessons: chapter.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          order: lesson.position,
+      })),
+    })) || [];
+
+    return updatedItems;
+  });
+  },[data])
 
 
   function SortableItem({ children, id, className, data }: SortableItemProps) { // Función que renderiza elementos arrastrables de una lista
