@@ -161,6 +161,58 @@ export const CourseStructure = ({ data }: iAppProps) => {
       setItems(updatedChapterForState);                                              // Actualiza el state de items
      
     }
+
+    // Lógica para mover lecciones.
+    if (activeType === "lesson" && overType === "lesson") {                                       // solo se ejecute el código si estamos moviendo una lección y la soltamos sobre otra lección.
+      const chapterId = active.data.current?.chapterId;                                           // ids del elemento arrastrado
+      const overChapterId = over.data.current?.chapterId;                                         // ids del elemento sobre el que se está arrastrando
+
+      if(!chapterId || chapterId !== overChapterId){                                              // Solo se deja mover lecciones en el mismo capítulo
+        toast.error("Lesson move between different chapters or invalid chapter id not allowed.");
+        return;
+      }
+
+      const chapterIndex = items.findIndex((chapter) => chapter.id === chapterId);                 // Índice del capítulo donde se encuentra el elemento arrastrado
+      
+      if(chapterIndex === -1){ // Validación
+        toast.error("Could not find chapter for lesson");
+        return;
+      }
+
+      const chapterToUpdate = items[chapterIndex];                                                  // Capítulo donde se encuentra el elemento arrastrado
+    
+      const oldLessonIndex = chapterToUpdate.lessons.findIndex((lesson) => lesson.id === activeId); // Índice del lección arrastrado en el array de lessons del capítulo
+    
+      const newLessonIndex = chapterToUpdate.lessons.findIndex((lesson) => lesson.id === overId);   // Índice del lección destino
+
+      if(oldLessonIndex === -1 || newLessonIndex === -1){ // Validación
+        toast.error("Could not find lesson for reordering");
+        return;
+      }
+
+      const reordedLessons = arrayMove(                                                              // arrayMove crea un nuevo array con el elemento oldIndex movido a newIndex
+        chapterToUpdate.lessons, 
+        oldLessonIndex, 
+        newLessonIndex
+      ); 
+
+      const updatedlessonForState = reordedLessons.map((lesson, index) => ({                         // Se recorre el nuevo array reordenado y asigna el order correcto a cada lección según su nueva posición (índice + 1). 
+        ...lesson,
+        order: index + 1, // para que no aparezca index 0
+      }))
+
+      const newItems = [...items];                                                                   // Copia del array items
+
+      newItems[chapterIndex] = {                                                                     // En el capítulo arrastrado se actualiza el array de lessons
+        ...chapterToUpdate,                                                                  
+        lessons: updatedlessonForState
+      }
+
+      const previousItems = [...items]; 
+      
+      setItems(newItems);                                                                          // Actualiza el state de items
+    }
+
   }
 
   function toggleChapter(chapterId: string) { // Cambia el state de isOpen de un chapter
