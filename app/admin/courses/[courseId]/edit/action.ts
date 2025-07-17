@@ -4,9 +4,10 @@ import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { fixedWindow , detectBot } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
-import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
+import { title } from 'process';
 
 const aj = arcjet // Configuración de protección contra bots y ataques de fuerza bruta
   .withRule(
@@ -169,6 +170,46 @@ export const reorderChapters = async(
     return {
       status: "error",
       message: "Failed to reorder chapters. Please check server logs for details."
+    }
+  }
+}
+
+export const createChapter = async(value: ChapterSchemaType): Promise<ApiResponse> => {
+  try{
+
+    const result = chapterSchema.safeParse(value); // Validación de datos de formulario
+    if(!result.success){
+      return {
+        status: "error",
+        message: "Invalid form data"
+      }
+    }
+
+    await prisma.$transaction(async(tx) => {
+      const maxPos = await tx.chapter.findFirst({
+        where: {
+          courseId: result.data.courseId,
+        },
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        }
+      })
+
+      await tx.chapter.create({
+        title : result.data.name,
+        courseId: result.data.courseId,
+        position: (maxPos?.position ?? 1) + 1
+      })
+    })
+
+
+  }catch{
+    return {
+      status: "error",
+      message: "Failed to create chapter. Please check server logs for details."
     }
   }
 }

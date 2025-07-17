@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {  useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { chapterSchema, ChapterSchemaType } from "@/lib/zodSchemas";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 export const NewChapterModal = ({ courseId }: { courseId: string }) => {
   
   const [isOpen, setIsOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
 
   const form = useForm<ChapterSchemaType>({
     resolver: zodResolver(chapterSchema),
@@ -21,6 +22,13 @@ export const NewChapterModal = ({ courseId }: { courseId: string }) => {
       courseId: courseId
     }
   });
+
+
+  const onSubmit = async(values: ChapterSchemaType) => {
+    startTransition(async() => {
+      //TODO - implementar la action
+    })
+  }
   
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
