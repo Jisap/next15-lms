@@ -1,34 +1,31 @@
-import { Alert } from "@/components/ui/alert";
+
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useState, useTransition } from "react";
-import { deleteLesson } from "../action";
+import { deleteChapter } from "../action";
 import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
 
 
 
 
-export const DeleteLesson = ({
+export const DeleteChapter = ({
   chapterId,
-  lessonId,
   courseId
 }: {
   chapterId: string;
-  lessonId: string;
   courseId: string;
 }) => {
 
   const [Open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const onSubmit = async() => { 
+  const onSubmit = async () => {
 
-    startTransition(async() => {
-      const { data: result, error } = await tryCatch(deleteLesson({ 
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(deleteChapter({
         chapterId: chapterId,
-        lessonId: lessonId,
         courseId: courseId
       }));
 
@@ -38,7 +35,7 @@ export const DeleteLesson = ({
       }
 
       if (result.status === "success") {
-        toast.success("Lesson deleted successfully");
+        toast.success("Chapter deleted successfully");
         setOpen(false);
       } else if (result.status === "error") {
         toast.error(result.message);
@@ -58,7 +55,7 @@ export const DeleteLesson = ({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure ?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the lesson and all its data.
+            This action cannot be undone. This will permanently delete the chapter and all its data.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

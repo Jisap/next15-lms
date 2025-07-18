@@ -46,6 +46,7 @@ import { reorderChapters, reorderLessons } from "../action"
 import { NewChapterModal } from "./NewChapterModal"
 import { NewLessonModal } from "./NewLessonModal"
 import { DeleteLesson } from "./DeleteLesson"
+import { DeleteChapter } from "./DeleteChapter"
 
 
 
@@ -358,12 +359,10 @@ export const CourseStructure = ({ data }: iAppProps) => {
                           <p className="cursor-pointer hover:text-primary pl-2">{item.title}</p>
                         </div>
 
-                        <Button
-                          size="icon"
-                          variant="outline"
-                        >
-                          <Trash2 className="size-4" />
-                        </Button>
+                        <DeleteChapter 
+                          chapterId={item.id} 
+                          courseId={data.id}
+                        />
                       </div>
 
                       <CollapsibleContent>

@@ -285,6 +285,86 @@ export const createLesson = async(values: LessonSchemaType): Promise<ApiResponse
   }
 }
 
+export const deleteChapter = async({
+  chapterId,
+  courseId
+}:{
+  chapterId: string;
+  courseId: string;
+}): Promise<ApiResponse> => {
+  
+  await requireAdmin();
+  
+  try {
+    
+    const courseWithChapters = await prisma.course.findUnique({                // Buscamos el curso que contiene el chapter a eliminar
+      where: {
+        id: courseId
+      },
+      select: {
+       chapter: {
+          orderBy: {
+            position: "asc",
+          },
+          select: {
+            id: true,
+            position: true
+          }
+       }
+      }
+    })
+
+    if (!courseWithChapters){
+      return {
+        status: "error",
+        message: "Course not found"
+      }
+    }
+
+    const chapters = courseWithChapters.chapter;                               // Obtenemos los capítulos del curso: "chapters"
+
+    const chapterToDelete = chapters.find((chap) => chap.id === chapterId);    // Desde "chapters" buscamos el capítulo a eliminar "chapterToDelete"
+
+    if (!chapterToDelete){                                                     // Validación de la existencia del capítulo a eliminar
+      return {
+        status: "error",
+        message: "Chapter not found in the course"
+      }
+    }
+
+    const remainingChapters = chapters.filter((chap) => chap.id !== chapterId); // Obtenemos los capítulos restantes del curso: RemainingChapters
+
+    const updates = remainingChapters.map((chap, index) => {                    // Actualizamos los capítulos restantes con la nueva posición
+      return prisma.chapter.update({                                            // Al hacer map obtenemos un índice para cada chapter que queda y para eliminar el cero sumamos 1
+        where: { id: chap.id },
+        data: { position: index + 1}
+      })
+    })                                                                           // update es un array que contiene operaciones de actualización en prisma
+
+    await prisma.$transaction([                                                  // Ejecutamos las actualizaciones en una transacción
+      ...updates,                                                                // 1º Spread de las operaciones de actualización
+      prisma.chapter.delete({                                                    // 2º Borrado del capítulo de la action
+        where: { 
+          id: chapterId,
+        }
+      })
+    ]); // El resultado final es un único array con las operaciones de actualización y borrado
+
+    revalidatePath(`/admin/courses/${courseId}/edit`) // Actualiza el cache de la página para que los cambios se reflejen
+
+    return {
+      status: "success",
+      message: "Chapter deleted and position reordered successfully"
+    }
+
+
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to delete chapter.."
+    }
+  }
+}
 export const deleteLesson = async({
   chapterId,
   lessonId,
