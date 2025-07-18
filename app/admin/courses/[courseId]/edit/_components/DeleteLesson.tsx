@@ -2,17 +2,52 @@ import { Alert } from "@/components/ui/alert";
 import { AlertDialog, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { deleteLesson } from "../action";
+import { tryCatch } from "@/hooks/try-catch";
+import { toast } from "sonner";
 
 
 
 
-export const DeleteLesson = ({ lessonId }: { lessonId: string }) => {
+export const DeleteLesson = ({
+  chapterId,
+  lessonId,
+  courseId
+}: {
+  chapterId: string;
+  lessonId: string;
+  courseId: string;
+}) => {
 
-  const [isOpen, setOpen] = useState(false);
+  const [Open, setOpen] = useState(false);
+  const [pending, startTransition] = useTransition();
+
+  const onSubmit = async() => { 
+
+    startTransition(async() => {
+      const { data: result, error } = await tryCatch(deleteLesson({ 
+        chapterId: chapterId,
+        lessonId: lessonId,
+        courseId: courseId
+      }));
+
+      if (error) {
+        toast.error("An unexpected error occured. Please try again later.");
+        return;
+      }
+
+      if (result.status === "success") {
+        toast.success("Chapter created successfully");
+        setOpen(false);
+      } else if (result.status === "error") {
+        toast.error(result.message);
+      }
+    })
+  }
 
   return (
-    <AlertDialog open={isOpen} onOpenChange={setOpen}>
+    <AlertDialog open={Open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button variant="ghost" size="icon">
           <Trash2 className="size-4" />
@@ -29,8 +64,11 @@ export const DeleteLesson = ({ lessonId }: { lessonId: string }) => {
 
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <Button>
-            Delete
+          <Button
+            onClick={onSubmit}
+            disabled={pending}
+          >
+            {pending ? "Deleting..." : "Delete"}
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>

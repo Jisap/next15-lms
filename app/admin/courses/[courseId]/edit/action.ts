@@ -227,6 +227,7 @@ export const createChapter = async(values: ChapterSchemaType): Promise<ApiRespon
     }
   }
 }
+
 export const createLesson = async(values: LessonSchemaType): Promise<ApiResponse> => {
   
   await requireAdmin();
@@ -283,6 +284,91 @@ export const createLesson = async(values: LessonSchemaType): Promise<ApiResponse
     }
   }
 }
+
+export const deleteLesson = async({
+  chapterId,
+  lessonId,
+  courseId
+}:{
+  chapterId: string;
+  lessonId: string;
+  courseId: string;
+}): Promise<ApiResponse> => {
+  
+  await requireAdmin();
+  
+  try {
+    
+    const chapterWithLessons = await prisma.chapter.findUnique({             // Buscamos el capítulo que contiene la lesson a eliminar
+      where: {
+        id: chapterId
+      },
+      select: {
+        lessons: {
+          orderBy: {
+            position: "asc"
+          },
+          select: {
+            id: true,
+            position: true
+          }
+        }
+      }
+    })
+
+    if(!chapterWithLessons){
+      return {
+        status: "error",
+        message: "Chapter not found"
+      }
+    }
+
+    const lessons = chapterWithLessons.lessons;                              // Obtenemos las lessons del capítulo: "lessons"
+
+    const lessonToDelete = lessons.find((lesson) => lesson.id === lessonId); // Desde lessons buscamos la lesson a eliminar "lessonToDelete"
+
+    if(!lessonToDelete){                                                     // Validación de la existencia de la lesson
+      return {
+        status: "error",
+        message: "Lesson not found in the chapter"
+      }
+    }
+
+    const remainingLessons = lessons.filter((lesson) => lesson.id !== lessonId); // Obtenemos las lessons restantes del capítulo: RemainingLessons
+
+    const updates = remainingLessons.map((lesson, index) => {                    // Actualizamos las lessons restantes con la nueva posición
+      return prisma.lesson.update({                                              // Al hacer map obtenemos un índice para cada lesson que queda y para eliminar el cero sumamos 1
+        where: { id: lesson.id },
+        data: { position: index + 1}
+      })
+    })                                                                           // update es un array que contiene operaciones de actualización en prisma
+
+    await prisma.$transaction([                                                  // Ejecutamos las actualizaciones en una transacción
+      ...updates,                                                                // 1º Spread de las operaciones de actualización
+      prisma.lesson.delete({                                                     // 2º Borrado de la lesson de la action
+        where: { 
+          id: lessonId,
+          chapterId: chapterId
+        }
+      })
+    ]); // El resultado final es un único array con las operaciones de actualización y borrado
+
+    revalidatePath(`/admin/courses/${courseId}/edit`) // Actualiza el cache de la página para que los cambios se reflejen
+
+    return {
+      status: "success",
+      message: "Lesson deleted and position reordered successfully"
+    }
+
+
+  } catch (error) {
+    return {
+      status: "error",
+      message: "Failed to delete lesson.."
+    }
+  }
+}
+
 
 
 

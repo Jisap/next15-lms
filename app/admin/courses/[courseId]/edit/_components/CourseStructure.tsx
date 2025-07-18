@@ -397,7 +397,11 @@ export const CourseStructure = ({ data }: iAppProps) => {
                                       </Link>
                                     </div>
 
-                                    <DeleteLesson lessonId={lesson.id} />
+                                    <DeleteLesson 
+                                      lessonId={lesson.id} 
+                                      chapterId={item.id} 
+                                      courseId={data.id}
+                                    />
                                   </div>
                                 )}
                               </SortableItem>
