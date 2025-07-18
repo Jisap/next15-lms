@@ -174,10 +174,10 @@ export const reorderChapters = async(
   }
 }
 
-export const createChapter = async(value: ChapterSchemaType): Promise<ApiResponse> => {
+export const createChapter = async(values: ChapterSchemaType): Promise<ApiResponse> => {
   try{
 
-    const result = chapterSchema.safeParse(value); // Validación de datos de formulario
+    const result = chapterSchema.safeParse(values); // Validación de datos de formulario
     if(!result.success){
       return {
         status: "error",
@@ -185,8 +185,11 @@ export const createChapter = async(value: ChapterSchemaType): Promise<ApiRespons
       }
     }
 
-    await prisma.$transaction(async(tx) => {
-      const maxPos = await tx.chapter.findFirst({ // Busca el capítulo con la posición más alta para el curso actual. Esto se hace para saber en que posición debe insertarse el nuevo capítulo (simempre al final)
+    await prisma.$transaction(async(tx) => {      // Iniciamos una transacción para que se ejecuten todas las operaciones en la misma transacción
+
+      // tx representa la transacción actual
+      // que se compone de dos partes:
+      const maxPos = await tx.chapter.findFirst({ // 1º Busca el capítulo con la posición más alta para el curso actual. Esto se hace para saber en que posición debe insertarse el nuevo capítulo (simempre al final)
         where: {
           courseId: result.data.courseId,
         },
@@ -198,12 +201,12 @@ export const createChapter = async(value: ChapterSchemaType): Promise<ApiRespons
         }
       })
 
-      await tx.chapter.create({ // Crea el nuevo registro en la tabla de capítulos
+      await tx.chapter.create({                   // 2º Crea el nuevo registro en la tabla de capítulos 
         data:{
           title : result.data.name,
           courseId: result.data.courseId,
-          position: (maxPos?.position ?? 1) + 1
-        }
+          position: (maxPos?.position ?? 0) + 1  // Si maxPos es undefined -> valor por defecto es 0 y a este se le suma 1 
+        }                                        // Si maxPos es un número -> se suma 1 al valor de maxPos
       })
     })
 

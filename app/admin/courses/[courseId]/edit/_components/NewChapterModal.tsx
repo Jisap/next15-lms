@@ -7,6 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { chapterSchema, ChapterSchemaType } from "@/lib/zodSchemas";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { tryCatch } from "@/hooks/try-catch";
+import { createChapter } from "../action";
+import { toast } from "sonner";
 
 
 
@@ -26,7 +29,20 @@ export const NewChapterModal = ({ courseId }: { courseId: string }) => {
 
   const onSubmit = async(values: ChapterSchemaType) => {
     startTransition(async() => {
-      //TODO - implementar la action
+
+      const {data: result, error} = await tryCatch(createChapter(values));
+      if(error){
+        toast.error("An unexpected error occured. Please try again later.");
+        return;
+      }
+
+      if(result.status === "success"){
+        toast.success("Chapter created successfully");
+        form.reset();
+        setIsOpen(false);
+      }else if( result.status === "error"){
+        toast.error(result.message);
+      }
     })
   }
   
@@ -55,10 +71,13 @@ export const NewChapterModal = ({ courseId }: { courseId: string }) => {
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-8">
+          <form 
+            className="space-y-8" 
+            onSubmit={form.handleSubmit(onSubmit)}
+          >
             <FormField 
               control={form.control}    // Se ocupa de la validación de los campos
-              name="name"              // Nombre del campo
+              name="name"               // Nombre del campo
               render={({ field }) => (  // Renderiza el campo
                 <FormItem>
                   <FormLabel>Name</FormLabel>
