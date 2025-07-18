@@ -44,6 +44,7 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { reorderChapters, reorderLessons } from "../action"
 import { NewChapterModal } from "./NewChapterModal"
+import { NewLessonModal } from "./NewLessonModal"
 
 
 
@@ -104,6 +105,7 @@ export const CourseStructure = ({ data }: iAppProps) => {
 
 
   function SortableItem({ children, id, className, data }: SortableItemProps) { // Función que renderiza elementos arrastrables de una lista
+    
     const {
       attributes,
       listeners, // detectan el drag
@@ -407,12 +409,10 @@ export const CourseStructure = ({ data }: iAppProps) => {
                           </SortableContext>
 
                           <div className="p-2">
-                            <Button
-                              variant="outline"
-                              className="w-full"
-                            >
-                              Create new lesson
-                            </Button>
+                            <NewLessonModal 
+                              courseId={data.id} 
+                              chapterId={item.id} 
+                            />
                           </div>
                         </div>
                       </CollapsibleContent>

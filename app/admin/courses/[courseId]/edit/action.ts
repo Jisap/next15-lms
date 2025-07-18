@@ -4,7 +4,7 @@ import { requireAdmin } from "@/app/data/admin/require-admin"
 import arcjet, { fixedWindow , detectBot } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
-import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 import { title } from 'process';
@@ -224,6 +224,62 @@ export const createChapter = async(values: ChapterSchemaType): Promise<ApiRespon
     return {
       status: "error",
       message: "Failed to create chapter. Please check server logs for details."
+    }
+  }
+}
+export const createLesson = async(values: LessonSchemaType): Promise<ApiResponse> => {
+  
+  await requireAdmin();
+
+  try{
+
+    const result = lessonSchema.safeParse(values); // Validación de datos de formulario
+    if(!result.success){
+      return {
+        status: "error",
+        message: "Invalid form data"
+      }
+    }
+
+    await prisma.$transaction(async(tx) => {      // Iniciamos una transacción para que se ejecuten todas las operaciones en la misma transacción
+
+      // tx representa la transacción actual
+      // que se compone de dos partes:
+      const maxPos = await tx.lesson.findFirst({  // 1º Busca la lesson con la posición más alta para el curso actual. Esto se hace para saber en que posición debe insertarse la lesson (siempre al final)
+        where: {
+          chapterId: result.data.chapterId,
+        },
+        select: {
+          position: true,
+        },
+        orderBy: {
+          position: "desc",
+        }
+      })
+
+      await tx.lesson.create({                    // 2º Crea el nuevo registro en la tabla de lessons
+        data:{
+          title : result.data.name,
+          description: result.data.description,
+          videoKey: result.data.videoKey,
+          thumbnailKey: result.data.thumbnailKey,
+          chapterId: result.data.chapterId,
+          position: (maxPos?.position ?? 0) + 1   // Si maxPos es undefined -> valor por defecto es 0 y a este se le suma 1 
+        }                                         // Si maxPos es un número -> se suma 1 al valor de maxPos
+      })
+    })
+
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`) // Actualiza el cache de la página para que los cambios se reflejen
+  
+    return {
+      status: "success",
+      message: "Lesson created successfully"
+    }
+    
+  }catch{
+    return {
+      status: "error",
+      message: "Failed to create lesson. Please check server logs for details."
     }
   }
 }
