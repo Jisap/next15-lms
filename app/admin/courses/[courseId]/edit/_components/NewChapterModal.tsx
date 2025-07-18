@@ -95,8 +95,9 @@ export const NewChapterModal = ({ courseId }: { courseId: string }) => {
             <DialogFooter>
               <Button
                 type="submit"
+                disabled={pending}
               >
-                Save
+                {pending ? "Saving..." : "Save Change"}
               </Button>
             </DialogFooter>
           </form>

@@ -175,6 +175,9 @@ export const reorderChapters = async(
 }
 
 export const createChapter = async(values: ChapterSchemaType): Promise<ApiResponse> => {
+  
+  await requireAdmin();
+
   try{
 
     const result = chapterSchema.safeParse(values); // Validación de datos de formulario
