@@ -278,7 +278,7 @@ export const Uploader = ({value, onChange, fileTypeAccepted}: iAppProps) => {
       : {"image/*": []},       
      maxFiles: 1,
      multiple: false,
-     maxSize: 10*1024*1024, // 10MB
+     maxSize: fileTypeAccepted === "image" ? 5*1024*1024 : 10*1024*1024,     // 5MB para imagenes y 10MB para videos
      onDropRejected: rejectedFiles,
      disabled: fileState.uploading || !!fileState.objectUrl
   })
