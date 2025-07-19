@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils"
-import { CloudUpload, CloudUploadIcon, ImageIcon, Loader2, XIcon } from "lucide-react"
+import { CloudUploadIcon, ImageIcon, Loader2, XIcon } from "lucide-react"
 import { Button } from "../ui/button"
 import Image from "next/image"
 
@@ -57,21 +57,31 @@ export const RenderErrorState = () => {
 export const RenderUploadedState = ({ 
   previewUrl, 
   isDeleting, 
-  handleRemoveFile 
+  handleRemoveFile,
+  fileType
 } : { 
   previewUrl: string ,
   isDeleting: boolean,
-  handleRemoveFile: () => void
+  handleRemoveFile: () => void,
+  fileType: "image" | "video"
 }) => {
   
   return(
-    <div>
-      <Image 
-        src={previewUrl}
-        alt="uploaded file"
-        fill
-        className="object-contain p-2"
-      />
+    <div className="relative group w-full h-full flex items-center justify-center">
+      {fileType === "video" ? (
+        <video 
+          src={previewUrl}
+          controls
+          className="rounded-md w-full h-full"
+        />
+      ): (
+        <Image 
+          src={previewUrl}
+          alt="uploaded file"
+          fill
+          className="object-contain p-2"
+        />
+      )}
 
       <Button
         variant="destructive"

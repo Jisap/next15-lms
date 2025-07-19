@@ -25,10 +25,11 @@ interface UploaderState {
 
 interface iAppProps {
   value?: string;
-  onChange?: (value:string) => void
+  onChange?: (value:string) => void;
+  fileTypeAccepted: "image" | "video";
 }
 
-export const Uploader = ({value, onChange}: iAppProps) => {
+export const Uploader = ({value, onChange, fileTypeAccepted}: iAppProps) => {
 
   const fileUrl = useConstructUrl( value || "")
 
@@ -39,12 +40,12 @@ export const Uploader = ({value, onChange}: iAppProps) => {
     uploading: false,
     progress: 0,
     isDeleting: false,
-    fileType: "image",
+    fileType: fileTypeAccepted,
     key: value, // value del formulario = key del state del uploader
-    objectUrl: fileUrl
+    objectUrl: value ? fileUrl : undefined,
   })
 
-  const uploadFile = async(file:File) => {                                    // 2º Inicia el proceso de subida
+  const uploadFile = useCallback(async (file: File) => {                      // 2º Inicia el proceso de subida
 
     setFileState((prev) => ({                                                 // Actualiza el estado para reflejar que la subida está en proceso.
       ...prev,
@@ -62,7 +63,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
           fileName: file.name,
           contentType: file.type,
           size: file.size,
-          isImage: true,
+          isImage: fileTypeAccepted === "image" ? true : false,
         }),
       });
 
@@ -131,7 +132,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
         uploading: false,
       }));
     }
-  }
+  }, [fileTypeAccepted, onChange]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {                    // 1º Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
     
@@ -149,12 +150,12 @@ export const Uploader = ({value, onChange}: iAppProps) => {
         error: false,
         id: uuidv4(),
         isDeleting: false,
-        fileType: "image"
+        fileType: fileTypeAccepted
       })
 
       uploadFile(file);                                                      // Inica el proceso de subida
     }
-  }, [fileState.objectUrl]);
+  }, [fileState.objectUrl, uploadFile, fileTypeAccepted]);
 
   const rejectedFiles = (fileRejection: FileRejection[]) => {                // Maneja los archivos que son rechazados por react-dropzone
     if(fileRejection.length) {
@@ -194,6 +195,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
         previewUrl={fileState.objectUrl} 
         handleRemoveFile={handleRemoveFile}
         isDeleting={fileState.isDeleting}  
+        fileType={fileState.fileType} // Se establece al inicio del componente
       />
     }
 
@@ -250,7 +252,7 @@ export const Uploader = ({value, onChange}: iAppProps) => {
           progress: 0,
           objectUrl: undefined,
           error: false,
-          fileType: "image",
+          fileType: fileTypeAccepted,
           id: null,
           isDeleting: false,
         }));
@@ -271,10 +273,12 @@ export const Uploader = ({value, onChange}: iAppProps) => {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({        // Utiliza react-dropzone para manejar el arrastrar y soltar de archivos
      onDrop,                                                                 // Callback que se ejecuta cuando el usuario suelta un archivo en la zona.
-     accept: {"image/*": []},       
+     accept: fileTypeAccepted === "video" 
+      ? {"video/*": []} 
+      : {"image/*": []},       
      maxFiles: 1,
      multiple: false,
-     maxSize: 5*1024*1024, // 5MB
+     maxSize: 10*1024*1024, // 10MB
      onDropRejected: rejectedFiles,
      disabled: fileState.uploading || !!fileState.objectUrl
   })

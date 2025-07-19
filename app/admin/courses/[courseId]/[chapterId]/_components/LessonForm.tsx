@@ -1,7 +1,7 @@
 "use client"
 
 import { AdminLessonSingularType } from "@/app/data/admin/admin-get-lesson"
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -19,6 +19,7 @@ import {
 import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
 import { Input } from "@/components/ui/input";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
+import { Uploader } from "@/components/file-uploader/Uploader";
 
 interface iAProps {
   data: AdminLessonSingularType;
@@ -92,6 +93,45 @@ export const LessonForm = ({ data, chapterId, courseId }: iAProps) => {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="thumbnailKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Thumbnail Image</FormLabel>
+                    <FormControl>
+                      <Uploader 
+                        onChange={field.onChange}
+                        value={field.value}
+                        fileTypeAccepted="image"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="videoKey"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Video File</FormLabel>
+                    <FormControl>
+                      <Uploader 
+                        onChange={field.onChange}
+                        value={field.value}
+                        fileTypeAccepted="video"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit">
+                Save Lesson
+              </Button>
             </form>
           </Form>
         </CardContent>
