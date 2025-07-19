@@ -11,6 +11,7 @@ export async function adminGetLesson(id: string) {
       id: id,
     },
     select: {
+      id: true,
       title: true,
       videoKey: true,
       thumbnailKey: true,

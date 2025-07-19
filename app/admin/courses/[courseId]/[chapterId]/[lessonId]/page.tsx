@@ -1,6 +1,6 @@
 
 import { adminGetLesson } from "@/app/data/admin/admin-get-lesson"
-import { LessonForm } from "../_components/LessonForm";
+import { LessonForm } from "./_components/LessonForm";
 
 
 interface Props{
