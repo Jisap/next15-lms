@@ -7,6 +7,24 @@ import TextAlign from "@tiptap/extension-text-align";
 
 export const RichTextEditor = ({ field }: { field: any }) => {
 
+  let initialContent: any = '<p>Hello world</p>';
+  if (field.value) {
+    try {
+      initialContent = JSON.parse(field.value);
+    } catch {
+      // Si no es JSON válido, lo tratamos como texto plano para TipTap
+      initialContent = {
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: field.value ? [{ type: "text", text: field.value }] : []
+          }
+        ]
+      };
+    }
+  }
+
   const editor = useEditor({
     extensions: [
       StarterKit,
@@ -26,7 +44,7 @@ export const RichTextEditor = ({ field }: { field: any }) => {
     onUpdate: ({ editor }) => {
       field.onChange(JSON.stringify(editor.getJSON())); // Update the value of the field with the current editor content in formated JSON string
     },
-    content: field.value ? JSON.parse(field.value) : '<p>Hello world</p>', // Set the initial content of the editor based on the value of the field
+    content: initialContent, // Usar el contenido inicial robusto
   })
 
   return (

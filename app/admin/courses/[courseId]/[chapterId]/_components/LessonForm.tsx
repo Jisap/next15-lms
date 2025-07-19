@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/form"
 import { lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
 import { Input } from "@/components/ui/input";
+import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 
 interface iAProps {
   data: AdminLessonSingularType;
@@ -60,7 +61,7 @@ export const LessonForm = ({ data, chapterId, courseId }: iAProps) => {
 
         <CardContent>
           <Form {...form}>
-            <form>
+            <form className="space-y-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -72,6 +73,20 @@ export const LessonForm = ({ data, chapterId, courseId }: iAProps) => {
                         placeholder="Lesson Name"
                         {...field}
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Description</FormLabel>
+                    <FormControl>
+                      <RichTextEditor field={field}/>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
