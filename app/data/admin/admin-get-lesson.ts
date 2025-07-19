@@ -25,3 +25,6 @@ export async function adminGetLesson(id: string) {
 
   return data;
 }
+
+
+export type AdminLessonSingularType = Awaited<ReturnType<typeof adminGetLesson>>;
