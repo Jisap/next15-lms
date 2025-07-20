@@ -26,3 +26,5 @@ export const getAllCourses = async () => {
 
   return data;
 }
+
+export type PublicCourseType = Awaited<ReturnType<typeof getAllCourses>>[0]
