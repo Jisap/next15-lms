@@ -3,11 +3,10 @@ import { buttonVariants } from "@/components/ui/button"
 import Link from "next/link"
 import { AdminCourseCard } from "./_components/AdminCourseCard"
 import { EmptyState } from "@/components/general/EmptyState"
+import { Suspense } from "react"
 
 
-const CoursesPage = async() => {
-
-  const data = await adminGetCourses()
+const CoursesPage = () => {
 
   return (
     <>
@@ -19,22 +18,35 @@ const CoursesPage = async() => {
         </Link>
       </div>
 
-      {data.length === 0 ? (
-        <EmptyState 
-          title="No courses found"
-          description="Create a new course to get started"
-          buttonText="Create Course"
-          href="/admin/courses/create"
-        />
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
-          {data.map((course) => (
-            <AdminCourseCard key={course.id} data={course} />
-          ))}
-        </div>
-      )}
+      <Suspense fallback={<p>Loading...</p>}>
+        <RenderCourses />
+      </Suspense>
     </>
   )
 }
 
 export default CoursesPage
+
+export const RenderCourses = async() => {
+  const data = await adminGetCourses();
+  return(
+    <>
+      {
+        data.length === 0 ? (
+          <EmptyState
+            title="No courses found"
+            description="Create a new course to get started"
+            buttonText="Create Course"
+            href="/admin/courses/create"
+          />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2 gap-7">
+            {data.map((course) => (
+              <AdminCourseCard key={course.id} data={course} />
+            ))}
+          </div>
+        )
+      }
+    </>
+  )
+}
