@@ -61,6 +61,7 @@
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
+    "happy-dom": "^18.0.1",
     "html-react-parser": "^5.2.6",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.525.0",

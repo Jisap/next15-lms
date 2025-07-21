@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo } from "react"
+import { useEffect, useState } from "react"
 import { generateHTML } from "@tiptap/html"
 import { type JSONContent } from "@tiptap/react"
 import StarterKit from "@tiptap/starter-kit";
@@ -9,20 +9,21 @@ import parse from 'html-react-parser';
 
 export const RenderDescription = ({ json }:{ json:JSONContent }) => {
 
-  const outPut = useMemo(() => { // Memorizamos una función que recoge el contenido del richEditor y convierte a html
-    return generateHTML(json, [
-      StarterKit,
+  const [output, setOutput] = useState("");
+
+  useEffect(() => {                              // La función generateHTML esta diseñada para ser usada solo en el navegador
+    const generatedOutput = generateHTML(json, [ // useEffect solo se ejecuta en el lado del cliente después de que el componente se ha montado en el navegador
+      StarterKit,                                // con useMemo nextjs 1º intenta prerenderizado en el lado del server -> useMemo ejecutaba la función en entorno de node -> error por entorno no adecuado
       TextAlign.configure({
         types: ["heading", "paragraph"],
       }),
-    ])
-  },[json])
-
+    ]);
+    setOutput(generatedOutput);
+  }, [json]);
 
   return (
     <div className="prose dark:prose-invert prose-li:marker:text-primary">
-      {parse(outPut)}
+      {parse(output)}
     </div>
   )
 }
-

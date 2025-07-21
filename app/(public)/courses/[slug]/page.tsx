@@ -1,9 +1,11 @@
 import { getIndividualCourse } from '@/app/data/course/get-course'
 import { RenderDescription } from '@/components/rich-text-editor/RenderDescription'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { useConstructUrl } from '@/hooks/use-construct-url'
-import { IconCategory, IconChartBar, IconClock } from '@tabler/icons-react'
+import { IconCategory, IconChartBar, IconChevronDown, IconClock } from '@tabler/icons-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -84,6 +86,69 @@ const SlugPage = async({ params }: iAppProps) => {
               ) || 0} Lessons
             </div>
           </div>
+
+          <div className='space-y-6'>
+            {course.chapter.map((chapter, index) => (
+              <Collapsible 
+                key={chapter.id} 
+                defaultOpen={index === 0}
+              >
+                <Card className='p-0 overflow-hidden border-2 transition-all duration-200 hover:shadow-md gap-0'>
+                  <CollapsibleTrigger>
+                    <div>
+                      <CardContent className='p-6 hover:bg-muted/50 trnasition-colors'>
+                        <div className='flex items-center justify-between'>
+                          
+                          <div className='flex items-center gap-4'>
+                            <p className='flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary font-semibold'>
+                              {index + 1}
+                            </p>
+
+                            <div>
+                              <h3 className="text-xl font-semibold text-left">
+                                {chapter.title}
+                              </h3>
+                              <p className='text-sm text-muted-foreground mt-1 text-left'>
+                                {chapter.lessons.length} lesson
+                                {chapter.lessons.length !== 1 ? 's' : ''}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className='flex items-center gap-3'>
+                            <Badge 
+                              variant="outline"
+                              className='text-xs'
+                            >
+                              {chapter.lessons.length} lesson
+                              {chapter.lessons.length !== 1 ? 's' : ''}
+                            </Badge>
+                            <IconChevronDown className='size-5 text-muted-foreground'/>
+                          </div>
+
+                        </div>
+                      </CardContent>
+                    </div>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <div className='border-t bg-muted-foreground/20'>
+                      <div className='p-6 pt-4 space-y-3'>
+                        {chapter.lessons.map((lesson, index) => (
+                          <div key={lesson.id}>
+                            <p key={lesson.id}>
+                              {lesson.title}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </CollapsibleContent>
+                </Card>
+              </Collapsible>
+            ))}
+          </div>    
+
         </div>
 
       </div>
