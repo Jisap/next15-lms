@@ -2,6 +2,7 @@ import { PublicCourseType } from "@/app/data/course/get-all-courses"
 import { Badge } from "@/components/ui/badge"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { useConstructUrl } from "@/hooks/use-construct-url"
 import { School, TimerIcon } from "lucide-react"
 import Image from "next/image"
@@ -57,6 +58,45 @@ export const PublicCourseCard = ({data}: iAppProps) => {
         >
           Learn more
         </Link>
+      </CardContent>
+    </Card>
+  )
+}
+
+export const PublicCourseCardSkeleton = () => {
+  return (
+    <Card>
+      <div className="absolute top-2 right-2 z-10 flex items-center">
+        <Skeleton className="h-6 w-20 rounded-full" />
+      </div>
+
+      <div className="w-full relative h-fit">
+        <Skeleton className="w-full rounded-t-xl aspect-video" />
+      </div>
+
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          <Skeleton className="h-6 w-full" />
+          <Skeleton className="h-6 w-3/4" />
+        </div>
+
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-2/3" />
+        </div>
+
+        <div className="mt-4 flex items-center gap-x-5">
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="h-4 w-8" />
+          </div>
+          <div className="flex items-center gap-x-2">
+            <Skeleton className="size-6 rounded-md" />
+            <Skeleton className="h-4 w-8" />
+          </div>
+        </div>
+
+        <Skeleton className="mt-4 w-full h-10 rounded-md"/>
       </CardContent>
     </Card>
   )

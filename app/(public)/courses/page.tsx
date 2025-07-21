@@ -1,6 +1,7 @@
 
 import { getAllCourses } from "@/app/data/course/get-all-courses";
-import { PublicCourseCard } from "../_components/PublicCourseCard";
+import { PublicCourseCard, PublicCourseCardSkeleton } from "../_components/PublicCourseCard";
+import { Suspense } from "react";
 
 
 
@@ -17,7 +18,10 @@ const PublicCoursesroute = () => {
           Discover our wide range of courses designed to help you achieve your learnings goals.
         </p>
       </div>
-      <RenderPublicCourses />  
+      
+      <Suspense fallback={<LoadingSkeletonLayout />}>
+        <RenderPublicCourses /> 
+      </Suspense>
     </div>
   )
 }
@@ -36,6 +40,16 @@ export const RenderPublicCourses = async() => {
         />
       ))}
 
+    </div>
+  )
+}
+
+export const LoadingSkeletonLayout = () => {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 9 }).map((_, index) => (
+        <PublicCourseCardSkeleton key={index} />
+      ))}
     </div>
   )
 }

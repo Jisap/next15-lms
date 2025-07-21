@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 
 export const getAllCourses = async () => {
 
+  //await new Promise((resolve) => setTimeout(resolve, 3000));
+
+
   const data = await prisma.course.findMany({
     where: {
       status: "Published"
