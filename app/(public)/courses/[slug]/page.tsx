@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { useConstructUrl } from '@/hooks/use-construct-url'
-import { IconCategory, IconChartBar, IconChevronDown, IconClock } from '@tabler/icons-react'
+import { IconCategory, IconChartBar, IconChevronDown, IconClock, IconPlayerPlay } from '@tabler/icons-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -132,13 +132,23 @@ const SlugPage = async({ params }: iAppProps) => {
                   </CollapsibleTrigger>
 
                   <CollapsibleContent>
-                    <div className='border-t bg-muted-foreground/20'>
+                    <div className='border-t bg-muted-foreground/10'>
                       <div className='p-6 pt-4 space-y-3'>
-                        {chapter.lessons.map((lesson, index) => (
-                          <div key={lesson.id}>
-                            <p key={lesson.id}>
-                              {lesson.title}
-                            </p>
+                        {chapter.lessons.map((lesson, lessonIndex) => (
+                          <div key={lesson.id} className='flex items-center gap-4 rounded-lg p-3 hover:bg-accent/40 transition-colors group'>
+                            <div className='flex size-8 items-center justify-center rounded-full bg-background border-2 border-primary/20'>
+                              <IconPlayerPlay className='size-4 text-muted-foreground group-hover:text-primary transition-colors' />
+                            </div>
+
+                            <div className='flex-1'>
+                              <p className='font-medium text-sm'>
+                                {lesson.title}
+                              </p>
+
+                              <p className='text-sx text-muted-foreground mt-1'>
+                                Lesson {lessonIndex + 1}
+                              </p>
+                            </div>
                           </div>
                         ))}
                       </div>
