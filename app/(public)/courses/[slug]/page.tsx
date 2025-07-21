@@ -69,12 +69,23 @@ const SlugPage = async({ params }: iAppProps) => {
               Course Description
             </h2>
 
+            <RenderDescription json={JSON.parse(course.description)} />  
+          </div>
+        </div>
+
+        <div className='mt-12 space-y-6'>
+          <div className='flex items-center justify-between'>
+            <h2 className='text-3xl font-semibold tracking-tight'>Course Content</h2>
             <div>
-              <RenderDescription json={JSON.parse(course.description)} />
+              {course.chapter.length} chapters | {' '}
+              {course.chapter.reduce(
+                (total, chapter) => total + chapter.lessons.length, 
+                0
+              ) || 0} Lessons
             </div>
           </div>
-
         </div>
+
       </div>
     </div>
   )
