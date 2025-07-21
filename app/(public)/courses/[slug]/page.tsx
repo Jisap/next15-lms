@@ -158,10 +158,47 @@ const SlugPage = async({ params }: iAppProps) => {
               </Collapsible>
             ))}
           </div>    
-
         </div>
-
       </div>
+
+      {/* Enrollment Card */}
+      <div className='order-2 lg:col-span-1'>
+          <div className='sticky top-20'>
+            <Card>
+              <CardContent className='p-6'>
+                <div className='flex items-center justify-between mb-6'>
+                  <span className='text-lg font-medium'>Price:</span>
+                  <span className='text-2xl font-bold text-primary'>
+                    {new Intl.NumberFormat('en-US', {
+                      style: "currency",
+                      currency: "USD",
+                    }).format(course.price)}
+                  </span>
+                </div>
+
+                <div>
+                  <h4 className='font-medium'>
+                    What you will get:
+                  </h4>
+                  
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex items-center gap-3'>
+                      <div className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary'>
+                        <IconClock />
+                      </div>
+
+                      <div>
+                        <p className='text-sm font-medium'>Course Duration</p>
+                        <p className='text-sm text-muted-foreground'>{course.duration} hours</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+      </div>
+
     </div>
   )
 }
