@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { useConstructUrl } from '@/hooks/use-construct-url'
-import { IconCategory, IconChartBar, IconChevronDown, IconClock, IconPlayerPlay } from '@tabler/icons-react'
+import { IconBook, IconCategory, IconChartBar, IconChevronDown, IconClock, IconPlayerPlay } from '@tabler/icons-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -176,7 +176,7 @@ const SlugPage = async({ params }: iAppProps) => {
                   </span>
                 </div>
 
-                <div>
+                <div className='mb-6 space-y-3 rounded-lg bg-muted p-4'>
                   <h4 className='font-medium'>
                     What you will get:
                   </h4>
@@ -192,6 +192,46 @@ const SlugPage = async({ params }: iAppProps) => {
                         <p className='text-sm text-muted-foreground'>{course.duration} hours</p>
                       </div>
                     </div>
+
+                    <div className='flex items-center gap-3'>
+                      <div className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary'>
+                        <IconChartBar />
+                      </div>
+
+                      <div>
+                        <p className='text-sm font-medium'>Difficulty Level</p>
+                        <p className='text-sm text-muted-foreground'>{course.level}</p>
+                      </div>
+                    </div>
+
+                    <div className='flex items-center gap-3'>
+                      <div className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary'>
+                        <IconCategory />
+                      </div>
+
+                      <div>
+                        <p className='text-sm font-medium'>Category</p>
+                        <p className='text-sm text-muted-foreground'>{course.category}</p>
+                      </div>
+                    </div>
+
+                    <div className='flex items-center gap-3'>
+                      <div className='flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary'>
+                        <IconBook />
+                      </div>
+
+                      <div>
+                        <p className='text-sm font-medium'>Total Lessons</p>
+                        <p className='text-sm text-muted-foreground'>
+                          
+                          {course.chapter.reduce(
+                            (total, chapter) => total + chapter.lessons.length, 
+                            0
+                          ) || 0}{" "} Lessons
+                        </p>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               </CardContent>
