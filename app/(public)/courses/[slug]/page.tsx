@@ -1,11 +1,13 @@
 import { getIndividualCourse } from '@/app/data/course/get-course'
 import { RenderDescription } from '@/components/rich-text-editor/RenderDescription'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Separator } from '@/components/ui/separator'
 import { useConstructUrl } from '@/hooks/use-construct-url'
 import { IconBook, IconCategory, IconChartBar, IconChevronDown, IconClock, IconPlayerPlay } from '@tabler/icons-react'
+import { CheckIcon } from 'lucide-react'
 import Image from 'next/image'
 import React from 'react'
 
@@ -231,9 +233,39 @@ const SlugPage = async({ params }: iAppProps) => {
                         </p>
                       </div>
                     </div>
-
                   </div>
                 </div>
+
+                <div className='mb-6 space-y-3'>
+                  <h4 className=''>
+                    This course includes:
+                  </h4>
+                  <ul className='space-y-2'>
+                    <li className='flex items-center gap-2 text-sm'>
+                      <div className='rounded-full bg-green-500/10 text-green-500 p-1'>
+                        <CheckIcon className='size-3'/>
+                      </div>
+                      <span>Full time access</span>
+                    </li>
+                    <li className='flex items-center gap-2 text-sm'>
+                      <div className='rounded-full bg-green-500/10 text-green-500 p-1'>
+                        <CheckIcon className='size-3'/>
+                      </div>
+                      <span>Access on mobile and desktop</span>
+                    </li>
+                    <li className='flex items-center gap-2 text-sm'>
+                      <div className='rounded-full bg-green-500/10 text-green-500 p-1'>
+                        <CheckIcon className='size-3'/>
+                      </div>
+                      <span>Certificate of Completion</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <Button className='w-full'>
+                  Enroll Now!
+                </Button>
+                <p className='mt-3 text-center text-xs text-muted-foreground'>30-day money-back guarantee</p>
               </CardContent>
             </Card>
           </div>
