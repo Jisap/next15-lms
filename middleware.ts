@@ -18,7 +18,7 @@ export async function authMiddleware(request: NextRequest) {
 // Configuración del matcher para que el middleware se aplique a todas las rutas,
 // excepto a los archivos estáticos y de imagen. Esto permite una protección global.
 export const config = {
-  matcher: ["/((?!_next/static|_next/image/favicon.ico).*)"]
+  matcher: ["/((?!_next/static|_next/image/favicon.ico|api/auth).*)"]
 };
 
 // Configuración de Arcjet para la protección contra bots en todas las rutas.

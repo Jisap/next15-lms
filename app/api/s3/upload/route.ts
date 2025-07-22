@@ -4,10 +4,9 @@ import z from "zod";
 import { v4 as uuidv4}  from "uuid";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
 import { S3 } from "@/lib/S3Client";
-import  { detectBot, fixedWindow } from "arcjet";
+import  { fixedWindow } from "arcjet";
 import arcjet from "@/lib/arcjet";
-import { headers } from "next/headers";
-import { auth } from "@/lib/auth";
+
 import { requireAdmin } from "@/app/data/admin/require-admin";
 
 
@@ -19,11 +18,6 @@ export const fileUploadSchema = z.object({ // Esquema de validación para la pet
 });
 
 const aj = arcjet
-  .withRule(
-    detectBot({
-      mode: "LIVE",
-      allow: [],
-    }))
   .withRule(
     fixedWindow({
       mode: "LIVE",

@@ -1,18 +1,13 @@
 "use server"
 
 import { requireAdmin } from "@/app/data/admin/require-admin";
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
 const aj = arcjet // Configuración de protección contra bots y ataques de fuerza bruta
-  .withRule(
-    detectBot({
-      mode: "LIVE",
-      allow: [],
-    }))
   .withRule(
     fixedWindow({
       mode: "LIVE",
