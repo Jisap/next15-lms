@@ -1,10 +1,20 @@
+"use client"
+
 import { buttonVariants } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { useConfetti } from '@/hooks/use-confetti'
 import { ArrowLeft, CheckIcon } from 'lucide-react'
 import Link from 'next/link'
-import React from 'react'
+import React, { useEffect } from 'react'
 
 const PaymentSucessfull = () => {
+
+  const { triggerConfetti } = useConfetti()
+
+  useEffect(() => {
+    triggerConfetti()
+  },[])
+
   return (
     <div className='w-full min-h-screen flex flex-1 justify-center items-center'>
       <Card className="w-[350px]">
