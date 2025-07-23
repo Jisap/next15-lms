@@ -140,7 +140,7 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         })
       }
 
-      const chekoutSession = await stripe.checkout.sessions.create({ // Creamos una especie de ticket de pago temporal y seguro
+      const chekoutSession = await stripe.checkout.sessions.create({            // Creamos una especie de ticket de pago temporal y seguro
         customer: stripeCustomerId,
         line_items: [
           {
