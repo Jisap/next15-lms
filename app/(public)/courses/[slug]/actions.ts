@@ -1,13 +1,23 @@
 "use server"
 
 import { requireUser } from "@/app/data/user/require-user"
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/type"
+import { request } from "@arcjet/next";
 import { redirect } from "next/navigation";
 
 import Stripe from "stripe";
+
+const aj = arcjet.withRule(
+  fixedWindow({
+    mode: "LIVE",
+    window: "1m",
+    max: 5,
+  })
+)
 
 
 // Esta action  se asegura de que el usuario que intenta inscribirse en un curso tenga una 
@@ -20,6 +30,18 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
   let checkoutUrl: string;
 
   try {
+
+    const req = await request()
+    const decision = await aj.protect(req, {
+      fingerprint: user.id,
+    });
+
+    if(!decision.isDenied){
+      return {
+        status: "error",
+        message: "You have been blocked"
+      }
+    }
 
     const course = await prisma.course.findUnique({                             // 2º Buscamos el curso en base de datos  
       where: {
