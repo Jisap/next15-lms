@@ -3,7 +3,7 @@ import { prisma } from "@/lib/db";
 import { headers } from "next/headers"
 
 
-export const checkifCourseBought = async (courseId:string, userId:string):Promise<boolean> => {
+export const checkifCourseBought = async (courseId:string):Promise<boolean> => {
   const session = await auth.api.getSession({
     headers: await headers()
   });
@@ -14,7 +14,7 @@ export const checkifCourseBought = async (courseId:string, userId:string):Promis
     where: {
       userId_courseId: { // Selector especial que une dos campos
         courseId: courseId,
-        userId: userId
+        userId: session.user.id
       },
     },
 
