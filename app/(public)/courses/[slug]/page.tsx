@@ -12,6 +12,7 @@ import Image from 'next/image'
 import React from 'react'
 import { enrollInCourseAction } from './actions'
 import { checkifCourseBought } from '@/app/data/user/user-is-enrolled'
+import { EnroolmentButton } from './_components/EnroolmentButton'
 
 interface iAppProps {
   params: Promise<{
@@ -271,9 +272,7 @@ const SlugPage = async({ params }: iAppProps) => {
                     Watch Course
                   </Link>
                 ):(
-                  <Button className='w-full'>
-                    Enroll Now!
-                  </Button>
+                  <EnroolmentButton courseId={course.id} />
                 )}
                 <p className='mt-3 text-center text-xs text-muted-foreground'>30-day money-back guarantee</p>
               </CardContent>
