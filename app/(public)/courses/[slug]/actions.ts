@@ -129,7 +129,7 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
             updatedAt: new Date()
           }
         })
-      } else {                                                                  // Si no existe, creamos una nueva subscripción
+      } else {                                                                  // Si no existe, creamos una nueva subscripción en la tabla enrollment con el status "Pending"
         enrollment = await tx.enrollment.create({
           data: {
             userId: user.id,
@@ -140,7 +140,7 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         })
       }
 
-      const chekoutSession = await stripe.checkout.sessions.create({            // Creamos una especie de ticket de pago temporal y seguro
+      const chekoutSession = await stripe.checkout.sessions.create({            // Creamos una session de pagos de stripe
         customer: stripeCustomerId,
         line_items: [
           {
@@ -153,14 +153,14 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         success_url: `${env.BETTER_AUTH_URL}/payment/success`,
         cancel_url: `${env.BETTER_AUTH_URL}/payment/cancel`,
         metadata: {
-          userId: user.id,
-          courseId: course.id,
-          enrollmentId: enrollment.id
+          userId: user.id,                                                      // En esta session de pagos agregamos el userId del usuario
+          courseId: course.id,                                                  // y el id del curso
+          enrollmentId: enrollment.id                                           // y el id de la subscripción
         }
       });
 
       return {
-        enrollment: enrollment,                                    // checkoutSession devuelve el user que compro el producto
+        enrollment: enrollment,                                    // checkoutSession devuelve la subscripción creada o actualizada
         checkoutUrl: chekoutSession.url                            // y la url de la compra
       }
     })
@@ -180,5 +180,5 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
     }
   }
 
-  redirect(checkoutUrl); // Redirigimos a la pasarela de pago de Stripe
+  redirect(checkoutUrl); // Redirigimos a la pasarela de pago de Stripe -> se efectua el pago -> stripe conecta con nuestro webhook
 }
