@@ -7,9 +7,11 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Separator } from '@/components/ui/separator'
 import { useConstructUrl } from '@/hooks/use-construct-url'
 import { IconBook, IconCategory, IconChartBar, IconChevronDown, IconClock, IconPlayerPlay } from '@tabler/icons-react'
-import { CheckIcon, Link } from 'lucide-react'
+import { CheckIcon } from 'lucide-react'
 import { checkifCourseBought } from '@/app/data/user/user-is-enrolled'
-import { EnroolmentButton } from './_components/EnroolmentButton'
+import { EnrollmentButton } from './_components/EnrollmentButton'
+import { buttonVariants } from '@/components/ui/button'
+import Link from 'next/link'
 
 interface iAppProps {
   params: Promise<{
@@ -265,11 +267,16 @@ const SlugPage = async({ params }: iAppProps) => {
                 </div>
 
                 {isEnrolled ? (
-                  <Link href="/dashboard">
+                  <Link 
+                    href="/dashboard"
+                    className={buttonVariants({
+                      className: 'w-full',
+                    })}  
+                  >
                     Watch Course
                   </Link>
                 ):(
-                  <EnroolmentButton courseId={course.id} />
+                  <EnrollmentButton courseId={course.id} />
                 )}
                 <p className='mt-3 text-center text-xs text-muted-foreground'>30-day money-back guarantee</p>
               </CardContent>

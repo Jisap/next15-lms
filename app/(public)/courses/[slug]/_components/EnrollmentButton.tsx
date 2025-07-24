@@ -8,7 +8,7 @@ import { tryCatch } from "@/hooks/try-catch";
 import { enrollInCourseAction } from "../actions";
 import { Loader2 } from "lucide-react";
 
-export const EnroolmentButton = ({ courseId }: { courseId: string }) => {
+export const EnrollmentButton = ({ courseId }: { courseId: string }) => {
 
   const [isPending, startTransition] = useTransition();
   
