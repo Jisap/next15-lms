@@ -52,6 +52,7 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         title: true,
         price: true,
         slug: true,
+        stripePriceId: true,
       }
     })
 
@@ -60,6 +61,13 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         status: "error",
         message: "Course not found"
       }
+    }
+
+    if (!course.stripePriceId) {
+      return {
+        status: "error",
+        message: "This course is not available for purchase at the moment.",
+      };
     }
 
     let stripeCustomerId:string                                                   // 3º Verificamos que el usuario sea un cliente de stripe
@@ -144,7 +152,7 @@ export const enrollInCourseAction = async (courseId:string):Promise<ApiResponse 
         customer: stripeCustomerId,
         line_items: [
           {
-            price: "price_1RnkRt4agEHB5BalQThmdVHS",
+            price: course.stripePriceId,
             quantity: 1,
           },
         ],
