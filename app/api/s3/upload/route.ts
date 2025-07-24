@@ -83,8 +83,9 @@ export async function POST(request: Request) {                                  
     return NextResponse.json(response);                                         // 5. Se parsea la respuesta
 
   } catch (error) {
+    console.error("Error uploading file", error)
     return NextResponse.json(
-      { error: "Failed to generate presigned url" }, 
+      { error: error instanceof Error ? error.message : "An unknown error occurred" }, 
       { status: 500 }
     );
   }
