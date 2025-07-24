@@ -28,7 +28,7 @@ const PaymentSucessfull = () => {
             <p className='text-sm mt-2 text-muted-foreground tracking-tight text-balance'>
               Congrats your payment was successfull. You should now have to the course.
             </p>
-            <Link href="/dashboard"
+            <Link href="/admin"
               className={buttonVariants({
                 className: "w-full mt-5"
               })}
