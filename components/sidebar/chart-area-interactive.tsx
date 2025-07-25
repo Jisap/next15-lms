@@ -21,7 +21,7 @@ import {
 
 export const description = "An interactive area chart"
 
-
+// Usar esta función para ver el gráfico de barras como ejemplo
 const generateDummyEnrollments = (numDays: number) => {
   const endDate = new Date();
   const enrollments: { date: string; enrollments: number }[] = [];
@@ -46,7 +46,13 @@ const chartConfig = {
   }
 } satisfies ChartConfig
 
-export function ChartAreaInteractive() {
+
+
+interface ChartAreaInteractiveProps {
+  data: { date: string; enrollments: number }[];
+}
+
+export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
 
   return (
     <Card className="@container/card">
@@ -64,7 +70,7 @@ export function ChartAreaInteractive() {
           config={chartConfig}
         >
           <BarChart
-            data={dummyEnrollments}
+            data={data}
             margin={{
               left: 12,
               right: 12,
