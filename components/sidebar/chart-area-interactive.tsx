@@ -22,22 +22,22 @@ import {
 export const description = "An interactive area chart"
 
 // Usar esta función para ver el gráfico de barras como ejemplo
-const generateDummyEnrollments = (numDays: number) => {
-  const endDate = new Date();
-  const enrollments: { date: string; enrollments: number }[] = [];
+// const generateDummyEnrollments = (numDays: number) => {
+//   const endDate = new Date();
+//   const enrollments: { date: string; enrollments: number }[] = [];
 
-  for (let i = numDays - 1; i >= 0; i--) {
-    const date = new Date(endDate);
-    date.setDate(endDate.getDate() - i);
-    const dateString = date.toISOString().split("T")[0];
-    const enrollmentsCount = Math.floor(Math.random() * 16) + 10; // Random number between 10 and 25
-    enrollments.push({ date: dateString, enrollments: enrollmentsCount });
-  }
+//   for (let i = numDays - 1; i >= 0; i--) {
+//     const date = new Date(endDate);
+//     date.setDate(endDate.getDate() - i);
+//     const dateString = date.toISOString().split("T")[0];
+//     const enrollmentsCount = Math.floor(Math.random() * 16) + 10; // Random number between 10 and 25
+//     enrollments.push({ date: dateString, enrollments: enrollmentsCount });
+//   }
 
-  return enrollments;
-};
+//   return enrollments;
+// };
 
-const dummyEnrollments = generateDummyEnrollments(30);
+// const dummyEnrollments = generateDummyEnrollments(30);
 
 const chartConfig = {
   enrollments:{
@@ -54,13 +54,17 @@ interface ChartAreaInteractiveProps {
 
 export function ChartAreaInteractive({ data }: ChartAreaInteractiveProps) {
 
+  const totalEnrollmentsNumber = React.useMemo(
+    () => data.reduce((acc, curr) => acc + curr.enrollments, 0), [data]
+  )
+
   return (
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>Total Enrollments</CardTitle>
         <CardDescription>
-          <span className="hidden @[540px]/card:block">Total Enrollments for the last 30 days: 1200</span>
-          <span className="@[540px]/card:hidden">Last 30 days: 1200</span>
+          <span className="hidden @[540px]/card:block">Total Enrollments for the last 30 days: {totalEnrollmentsNumber}</span>
+          <span className="@[540px]/card:hidden">Last 30 days: {totalEnrollmentsNumber}</span>
         </CardDescription>
       </CardHeader>
 
