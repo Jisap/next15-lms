@@ -2,6 +2,7 @@ import { CourseSidebarDataType } from "@/app/data/course/get-course-sidebar-data
 import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Progress } from "@/components/ui/progress"
+import { CollapsibleContent } from "@radix-ui/react-collapsible"
 import { ChevronDown, Play } from "lucide-react"
 
 interface iAppProps {
@@ -39,8 +40,8 @@ export const CourseSidebar = ({ course }: iAppProps) => {
       </div>
 
       <div className="py-4 pr-4 space-y-3">
-        {course.chapter.map((chapter) => (
-          <Collapsible key={chapter.id}>
+        {course.chapter.map((chapter, index) => (
+          <Collapsible key={chapter.id} defaultOpen={index === 0}>
             <CollapsibleTrigger asChild>
               <Button 
                 variant="outline" 
@@ -53,9 +54,20 @@ export const CourseSidebar = ({ course }: iAppProps) => {
                   <p className="font-semibold text-sm truncate text-foreground">
                     {chapter.position}: {chapter.title}
                   </p>
+                  <p className="text-[10px] text-muted-foreground font-medium truncate">
+                    {chapter.lessons.length} lessons
+                  </p>
                 </div>
               </Button>
             </CollapsibleTrigger>
+
+            <CollapsibleContent className="mt-3 pl-6 border-l-2 space-y-2">
+              {chapter.lessons.map((lesson) => (
+                <p key={lesson.id} className="">
+                  {lesson.title}
+                </p>
+              ))}
+            </CollapsibleContent>
           </Collapsible>
         ))}
       </div>
