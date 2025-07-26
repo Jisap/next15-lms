@@ -2,6 +2,7 @@ import { EmptyState } from "@/components/general/EmptyState";
 import { getAllCourses } from "../data/course/get-all-courses";
 import { getEnrolledCourses } from "../data/user/get-enrolled-courses";
 import { PublicCourseCard } from "../(public)/_components/PublicCourseCard";
+import Link from "next/link";
 
 
 
@@ -33,10 +34,13 @@ const DashboardPage = async() => {
       ):(
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {enrolledCourses.map(({ Course }) => (
-            <PublicCourseCard 
-              key={Course.id} 
-              data={Course} 
-            />
+            // <PublicCourseCard 
+            //   key={Course.id} 
+            //   data={Course} 
+            // />
+            <Link key={Course.id} href={`/dashboard/${Course.slug}`}>
+              {Course.title}
+            </Link>
           ))}
         </div>
       )}
