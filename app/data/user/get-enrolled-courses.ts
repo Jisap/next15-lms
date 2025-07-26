@@ -18,6 +18,8 @@ export const getEnrolledCourses = async() => {
           smallDescription: true,
           title: true,
           filekey: true,
+          price: true,
+          category: true,
           level: true,
           slug: true,
           duration: true,
