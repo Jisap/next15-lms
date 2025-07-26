@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 export const getCourseSidebarData = async( slug: string ) => {
   const session = await requireUser();
 
-  const course = await prisma.course.findUnique({
+  const course = await prisma.course.findUnique({ // Busca el curso en base al slug
     where: {
       slug: slug,
     },
@@ -47,7 +47,7 @@ export const getCourseSidebarData = async( slug: string ) => {
     return notFound()
   }
 
-  const enrollment = await prisma.enrollment.findUnique({
+  const enrollment = await prisma.enrollment.findUnique({ // Tiene que tener una inscripción activa para poder ver el curso
     where: {
       userId_courseId: {
         userId: session.id,
