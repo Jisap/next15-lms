@@ -1,8 +1,7 @@
 import { CourseSidebarDataType } from "@/app/data/course/get-course-sidebar-data"
 import { Button } from "@/components/ui/button"
-import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { Progress } from "@/components/ui/progress"
-import { CollapsibleContent } from "@radix-ui/react-collapsible"
 import { ChevronDown, Play } from "lucide-react"
 
 interface iAppProps {
@@ -45,10 +44,10 @@ export const CourseSidebar = ({ course }: iAppProps) => {
             <CollapsibleTrigger asChild>
               <Button 
                 variant="outline" 
-                className="w-full p-3 h-auto flex items-center gap-2"
+                className="w-full p-3 h-auto flex items-center gap-2 group"
               >
                 <div className="shrink-0">
-                  <ChevronDown className="size-4 text-primary"/>
+                  <ChevronDown className="size-4 text-primary transition-transform duration-200 group-data-[state=open]:rotate-180"/>
                 </div>
                 <div className="flex-1 text-left min-w-0">
                   <p className="font-semibold text-sm truncate text-foreground">
