@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { Progress } from "@/components/ui/progress"
 import { ChevronDown, Play } from "lucide-react"
+import { LessonItem } from "./LessonItem"
 
 interface iAppProps {
   course: CourseSidebarDataType["course"]
@@ -62,9 +63,11 @@ export const CourseSidebar = ({ course }: iAppProps) => {
 
             <CollapsibleContent className="mt-3 pl-6 border-l-2 space-y-2">
               {chapter.lessons.map((lesson) => (
-                <p key={lesson.id} className="">
-                  {lesson.title}
-                </p>
+                <LessonItem 
+                  key={lesson.id} 
+                  lesson={lesson} 
+                  slug={course.slug}
+                />
               ))}
             </CollapsibleContent>
           </Collapsible>
