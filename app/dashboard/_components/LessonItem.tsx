@@ -47,13 +47,17 @@ export const LessonItem = ({ lesson, slug }: iAppProps) => {
           )}
         </div>
 
-        <div>
+        <div className="flex-1 text-left min-w-0">
           <p className={cn(
             "text-xs font-medium truncate",
             completed && "text-green-800 dark:text-green-200"
           )}>
             {lesson.position}. {lesson.title}
           </p>
+
+          {completed && (
+            <p className="text-[10px] text-green-700 dark:text-green-300 font-medium">Completed</p>
+          )}
         </div>
       </div>
     </Link>
