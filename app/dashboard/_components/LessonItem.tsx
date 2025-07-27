@@ -28,7 +28,7 @@ export const LessonItem = ({ lesson, slug }: iAppProps) => {
           completed && "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/50 text-green-800 dark:text-green-200"
         )
       })}
-      href="/"
+      href={`/dashboard/${slug}/${lesson.id}`}
     >
       <div className="flex items-center gap-2.5 w-full min-w-0">
         <div className="shrink-0">
