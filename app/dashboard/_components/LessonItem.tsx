@@ -16,11 +16,17 @@ interface iAppProps {
 
 
 export const LessonItem = ({ lesson, slug }: iAppProps) => {
+
+  const completed = true;
+
   return (
     <Link
       className={buttonVariants({
-        variant: "outline",
-        className: cn("w-full p-2.5 h-auto justify-start transition-all")
+        variant: completed ? "secondary" : "outline",
+        className: cn(
+          "w-full p-2.5 h-auto justify-start transition-all",
+          completed && "bg-green-100 dark:bg-green-900/30 border-green-300 dark:border-green-700 hover:bg-green-200 dark:hover:bg-green-900/50 text-green-800 dark:text-green-200"
+        )
       })}
       href="/"
     >
@@ -36,7 +42,9 @@ export const LessonItem = ({ lesson, slug }: iAppProps) => {
         </div>
 
         <div>
-          <p>
+          <p className={cn(
+            "text-xs font-medium truncate"
+          )}>
             {lesson.position}. {lesson.title}
           </p>
         </div>
