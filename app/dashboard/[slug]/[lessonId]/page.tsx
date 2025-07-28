@@ -1,9 +1,19 @@
-import React from 'react'
+import { getLessonContent } from "@/app/data/course/get-lesson-content"
 
-const LessonContentPage = () => {
+interface iAppProps {
+  params: Promise<{
+    lessonId: string
+  }>
+}
+
+const LessonContentPage = async({ params }: iAppProps) => {
+
+  const { lessonId } = await params;
+  const data = await getLessonContent(lessonId)
+
   return (
     <div>
-      LessonPage
+      <h1>{data.title}</h1>
     </div>
   )
 }
