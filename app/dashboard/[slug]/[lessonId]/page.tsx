@@ -1,4 +1,5 @@
 import { getLessonContent } from "@/app/data/course/get-lesson-content"
+import { CourseContent } from "./_components/CourseContent";
 
 interface iAppProps {
   params: Promise<{
@@ -13,7 +14,7 @@ const LessonContentPage = async({ params }: iAppProps) => {
 
   return (
     <div>
-      <h1>{data.title}</h1>
+      <CourseContent data={data} />
     </div>
   )
 }

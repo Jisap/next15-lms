@@ -12,7 +12,7 @@ export const adminGetRecentCourses = async () => {
     orderBy: {
       createdAt: "desc",
     },
-    take:2,
+    take:3,
     select: {
       id: true,
       title: true,

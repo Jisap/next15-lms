@@ -48,5 +48,6 @@ export const getLessonContent = async (lessonId: string) => {
   }
 
   return lesson;
-
 }
+
+export type LessonContentType = Awaited<ReturnType<typeof getLessonContent>>
