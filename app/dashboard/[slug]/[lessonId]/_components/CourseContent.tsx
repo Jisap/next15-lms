@@ -18,7 +18,7 @@ export const CourseContent = ({ data }: iAppProps) => {
     thumbnailKey: string,
     videoKey: string
   }) => {
-    
+
     const videoUrl = useConstructUrl( videoKey );
     const thumbnailUrl = useConstructUrl( thumbnailKey );
 
@@ -63,8 +63,10 @@ export const CourseContent = ({ data }: iAppProps) => {
         </Button>
       </div>
 
-      <div>
-        <h1>{data.title}</h1>
+      <div className="space-y-3 pt-3">
+        <h1 className="text-3xl font-bold tracking-tight text-foreground">
+          {data.title}
+        </h1>
         {data.description && (
           <RenderDescription json={JSON.parse(data.description)} />
         )}
