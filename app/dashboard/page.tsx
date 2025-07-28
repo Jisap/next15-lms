@@ -33,6 +33,7 @@ const DashboardPage = async() => {
           href="/courses"
         />
       ):(
+        // Original Code
         // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         //    {enrolledCourses.map(({ Course }) => (
         //     <Link key={Course.id} href={`/dashboard/${Course.slug}`}>
@@ -40,6 +41,7 @@ const DashboardPage = async() => {
         //     </Link>
         //   ))}
         // </div>
+        // New Code
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {enrolledCourses.map(({ Course }) => (
               <EnrolledCourseCard key={Course.id} data={Course} />
