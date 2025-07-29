@@ -44,7 +44,7 @@ export const CourseProgressCard = ({ data }: iAppProps) => {
           {data.Course.smallDescription}
         </p>
 
-        <div className="space-y-4">
+        <div className="space-y-4 mt-5">
           <div className="flex justify-between mb-1 text-sm">
             <span>Progress:</span>
             <span className="font-medium"> {progressPercentage}%</span>
@@ -53,7 +53,9 @@ export const CourseProgressCard = ({ data }: iAppProps) => {
             value={progressPercentage} 
             className="h-1.5" 
           /> 
-          <p>{completedLessons} of  {totalLessons} lessons completed</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {completedLessons} of  {totalLessons} lessons completed
+          </p>
         </div>
 
         <Link
