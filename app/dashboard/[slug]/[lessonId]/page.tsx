@@ -1,6 +1,7 @@
 import { getLessonContent } from "@/app/data/course/get-lesson-content"
 import { CourseContent } from "./_components/CourseContent";
 import { Suspense } from "react";
+import { LessonSkeleton } from "./_components/LessonSkeleton";
 
 interface iAppProps {
   params: Promise<{
@@ -13,7 +14,7 @@ const LessonContentPage = async ({ params }: iAppProps) => { // LessonContentPag
   const { lessonId } = await params;
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
+    <Suspense fallback={<LessonSkeleton />}>
       <LessonContentLoader lessonId={lessonId} />
     </Suspense>
   )
