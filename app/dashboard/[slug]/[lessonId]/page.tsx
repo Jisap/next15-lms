@@ -1,5 +1,6 @@
 import { getLessonContent } from "@/app/data/course/get-lesson-content"
 import { CourseContent } from "./_components/CourseContent";
+import { Suspense } from "react";
 
 interface iAppProps {
   params: Promise<{
@@ -7,16 +8,25 @@ interface iAppProps {
   }>
 }
 
-const LessonContentPage = async({ params }: iAppProps) => {
+const LessonContentPage = async ({ params }: iAppProps) => { // LessonContentPage se encarga de recibir los parámetros de la ruta y delega la carga de datos a LessonContentLoader.
 
   const { lessonId } = await params;
-  const data = await getLessonContent(lessonId)
 
   return (
-    <div>
-      <CourseContent data={data} />
-    </div>
+    <Suspense fallback={<p>Loading...</p>}>
+      <LessonContentLoader lessonId={lessonId} />
+    </Suspense>
   )
 }
 
 export default LessonContentPage 
+
+
+const LessonContentLoader = async({ lessonId }:{ lessonId: string }) => { 
+  
+  const data = await getLessonContent(lessonId)
+
+  return (
+    <CourseContent data={data} />
+  )
+}
