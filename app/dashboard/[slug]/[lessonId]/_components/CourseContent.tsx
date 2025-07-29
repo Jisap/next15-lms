@@ -1,8 +1,16 @@
+"use client"
+
 import { LessonContentType } from "@/app/data/course/get-lesson-content"
 import { RenderDescription } from "@/components/rich-text-editor/RenderDescription"
 import { Button } from "@/components/ui/button"
+import { tryCatch } from "@/hooks/try-catch"
 import { useConstructUrl } from "@/hooks/use-construct-url"
 import { BookIcon, CheckCircle } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTransition } from "react"
+import { toast } from "sonner"
+import { MarklessonComplete } from "../actions"
+import { useConfetti } from "@/hooks/use-confetti"
 
 
 interface iAppProps {
@@ -10,6 +18,9 @@ interface iAppProps {
 }
 
 export const CourseContent = ({ data }: iAppProps) => {
+
+  const [isPending, startTransition] = useTransition();
+  const { triggerConfetti } = useConfetti();
 
   const VideoPlayer = ({
     thumbnailKey,
@@ -49,6 +60,25 @@ export const CourseContent = ({ data }: iAppProps) => {
     )
   }
 
+  const onSubmit = () => {
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(MarklessonComplete(data.id, data.Chapter?.Course?.slug ?? ""));
+
+      if (error) {
+        toast.error("An unexpected error occurred");
+        return
+      }
+
+      if (result.status === "success") {
+        toast.success(result.message);
+        triggerConfetti();
+      } else if (result.status === "error") {
+        toast.error(result.message)
+      }
+    })
+  };
+
+
   return (
     <div className="flex flex-col h-full bg-background pl-6">
       <VideoPlayer 
@@ -57,10 +87,21 @@ export const CourseContent = ({ data }: iAppProps) => {
       />
 
       <div className="py-4 border-b">
-        <Button variant="outline">
-          <CheckCircle className="size-4 mr-2 text-green-500" />
-          Mark as Complete
-        </Button>
+        {data.lessonProgress.length > 0 ? (
+          <Button variant="outline" className="bg-green-500/10 text-green-500 hover:text-green-600">
+            <CheckCircle className="size-4 mr-2 text-green-500" />
+            Completed
+          </Button>
+        ):(
+          <Button 
+            variant="outline" 
+            onClick={onSubmit}
+            disabled={isPending}
+          >
+            <CheckCircle className="size-4 mr-2 text-green-500" />
+            Mark as Complete
+          </Button> 
+        )}
       </div>
 
       <div className="space-y-3 pt-3">

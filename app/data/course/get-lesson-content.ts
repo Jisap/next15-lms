@@ -19,9 +19,23 @@ export const getLessonContent = async (lessonId: string) => {
       thumbnailKey: true,
       videoKey: true,
       position: true,
+      lessonProgress:{
+        where: {
+          userId: session.id
+        },
+        select: {
+          completed: true,
+          lessonId: true,
+        },
+      },
       Chapter: {
         select: {
           courseId: true,
+          Course: {
+            select: {
+              slug: true,
+            }
+          }
         }
       }
     }

@@ -77,6 +77,9 @@ export const CourseSidebar = ({ course }: iAppProps) => {
                   lesson={lesson} 
                   slug={course.slug}
                   isActive={currentLessonId === lesson.id}
+                  completed={lesson.lessonProgress.find(
+                    (progress) => progress.lessonId === lesson.id
+                  )?.completed || false}
                 />
               ))}
             </CollapsibleContent>
